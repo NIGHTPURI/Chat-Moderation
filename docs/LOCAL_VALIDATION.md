@@ -71,6 +71,36 @@ hybrid routing을 비교한다. 이 task는 분석용이며 JUnit pass/fail 기�
 현재 provider는 실제 AI가 아닌 재현 가능한 stand-in이다. 구조, 라우팅 기준, privacy,
 failure 정책과 결과 해석은 [Semantic Experiment](SEMANTIC_EXPERIMENT.md)에 기록한다.
 
+실제 provider 5-way 비교는 별도 credential-gated task로 실행한다.
+
+```bash
+./gradlew realSemanticModerationEvaluation
+```
+
+`OPENAI_API_KEY`가 없으면 이 task만 안내 후 skip되며 `test`, deterministic evaluation,
+benchmark와 기존 local semantic task에는 영향을 주지 않는다. 상세 환경 변수와 비용
+설정은 [Real Semantic Experiment](REAL_SEMANTIC_EXPERIMENT.md)를 참고한다.
+
+무료 OpenAI Moderation API 비교는 다음처럼 별도 실행한다.
+
+```bash
+./gradlew openAiModerationEvaluation
+```
+
+이 task도 `OPENAI_API_KEY`가 없으면 안내 후 skip한다. `omni-moderation-latest`의
+provider-native category 통계, rate-limit 간격과 해석 기준은
+[OpenAI Moderation API Experiment](OPENAI_MODERATION_API_EXPERIMENT.md)에 기록한다.
+
+Policy score calibration과 sealed holdout 평가는 다음 task로 실행한다.
+
+```bash
+./gradlew moderationScoreCalibration
+```
+
+이 task는 기존 108건을 로드하지 않으며 220건 calibration에서 threshold를 먼저 선택한
+후 165건 holdout을 평가한다. 상세 계약은
+[Moderation Score Calibration](MODERATION_SCORE_CALIBRATION.md)에 기록한다.
+
 ## Benchmark
 
 ```bash

@@ -133,3 +133,22 @@ Core에 `@Service`, `RedisTemplate`, WebSocket API를 직접 넣지 않는다.
 - 외부 AI 장애가 채팅 전체 장애로 번지지 않도록 fallback 정책 필요
 - 로그에 원문 개인정보를 과도하게 남기지 않기
 - 향후 Micrometer metric 연동 가능
+
+## 6. Semantic Experiment Boundary
+
+Phase 3.10과 3.11의 semantic provider, router, hybrid moderator 및 evaluation runner는
+모두 `src/test`에 있다. OpenAI provider를 추가해도 production `src/main` API와
+deterministic 동작은 바뀌지 않는다.
+
+실제 provider는 router가 `NEEDS_SEMANTIC_REVIEW`로 분류한 메시지만 hybrid 경로에서
+호출한다. deterministic 결과가 MASK이면 provider 입력은 항상 `outputMessage`이며,
+원문 개인정보를 전송하지 않는다. API failure는 기존 `ProviderFailurePolicy`에서 처리한다.
+
+Phase 3.11b의 Moderation API provider는 custom prompt를 사용하지 않는다. API가 반환한
+native category map을 별도 metadata로 보존하고, 현재 core reason과 억지로 매핑하지
+않는다. 실제 category 이름은 고정 목록이 아니라 응답 객체의 key를 동적으로 수집한다.
+
+Phase 3.12의 score threshold와 dataset도 `src/test`에만 존재한다. Threshold 선택기는
+provider의 `flagged` 기본 판정을 변경하지 않고 보존된 category score 위에 application
+policy 후보를 별도로 계산한다. Calibration과 holdout은 resource와 실행 순서가 분리되며,
+선택 과정은 historical semantic dataset이나 holdout 결과를 읽지 않는다.

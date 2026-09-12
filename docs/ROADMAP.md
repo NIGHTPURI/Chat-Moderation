@@ -128,6 +128,67 @@
 
 ---
 
+## Phase 3.11 — Real Semantic Moderation Provider Experiment
+
+- production core와 분리된 OpenAI Responses API provider
+- frozen `semantic-evaluation.tsv`와 frozen router를 사용하는 5-way 비교
+- structured output 및 malformed response의 `UNKNOWN` 처리
+- request/success/error/timeout, network latency, token, configurable cost 계측
+- credential이 없을 때 전체 test와 기존 task를 보존하는 전용 실행 task
+
+현재 상태:
+- provider, runner, unit/privacy/failure 검증 구현 완료
+- 실제 credential이 없어 frozen dataset API 실행 및 도입 가치 판단은 보류
+
+완료 조건:
+- 실제 provider로 108건 frozen evaluation 실행
+- category별 결과, holdout routing rate, latency, token/cost, FP/FN 기록
+- deterministic baseline 대비 서비스 도입 가치 판단
+
+---
+
+## Phase 3.11b — OpenAI Free Moderation API Experiment
+
+- `omni-moderation-latest`와 `/v1/moderations`를 사용하는 별도 provider
+- prompt 없이 공식 `flagged`, `categories`, `category_scores`를 그대로 평가
+- provider-native category 동적 보존 및 집계
+- sequential 250ms 간격 호출과 429/timeout/error/network latency 계측
+- frozen 108건 5-way 비교 및 holdout routing rate 재계산
+- API cost를 유료 Responses provider와 분리해 `$0`으로 보고
+
+현재 상태:
+- provider, runner, unit/privacy/rate-limit/failure 검증 및 live 199회 호출 완료
+- API-only accuracy 49.07%, precision 100%, recall 14.06%, FPR 0%, FNR 85.94%
+- error/timeout/429 0건, API cost $0
+
+완료 조건:
+- 실제 API로 frozen 108건 평가
+- category 통계, hybrid 성능, latency, 429/error/timeout, FP/FN 기록
+- 서비스 전용 의미 판단을 보완할 수 있는지 한계를 포함해 판단
+
+---
+
+## Phase 3.12 — Policy Adjudication and Moderation Score Calibration
+
+- `DIRECT_ABUSE`와 `MENTION_OR_REPORT` 정책 분리
+- 기존 semantic 108건을 historical benchmark로 동결
+- 독립 합성 calibration 220건과 sealed holdout 165건
+- provider-native category score의 positive/negative distribution
+- FPR ceiling별 abuse/sexual threshold 후보 탐색
+- threshold 선택 후 deterministic/default/custom hybrid holdout 비교
+
+현재 상태:
+- 정책, dataset, 분석/선택/holdout runner와 단위 테스트 구현 완료
+- credential이 없어 실제 score distribution, threshold와 holdout 결과는 미확정
+
+완료 조건:
+- calibration 220건 실제 API score 수집
+- FPR ≤ 5% 우선순위로 threshold 확정
+- threshold 변경 없이 sealed holdout 165건 평가
+- default flagged 대비 개선과 서비스 도입 가치 판단
+
+---
+
 ## Phase 4 — Spring Adapter
 
 별도 모듈 또는 패키지로 추가 고려.

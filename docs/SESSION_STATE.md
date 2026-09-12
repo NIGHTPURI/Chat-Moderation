@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.10 — Semantic Moderation Experiment 완료
+Phase 3.12 — Policy Adjudication and Moderation Score Calibration 구현 완료, 실제 실행 대기
 
 ## 완료된 것
 
@@ -45,17 +45,41 @@ Phase 3.10 — Semantic Moderation Experiment 완료
 - production core와 분리된 semantic provider abstraction 및 명시적 review router
 - 108건 semantic context dataset과 3-way 비교 evaluation runner
 - 개인정보 masking 선행 및 FAIL_OPEN/FAIL_CLOSED/DETERMINISTIC_FALLBACK 실험
+- OpenAI Responses API 기반 실제 provider 격리 구현
+- `gpt-5.6-luna` 기본 모델과 strict JSON schema 응답 계약
+- malformed/non-2xx/timeout의 UNKNOWN 안전 처리
+- frozen 108건의 5-way 비교 runner와 category별 accuracy 출력
+- 실제 API request/success/error/timeout, network latency, token/cost 계측
+- `OPENAI_API_KEY`가 없을 때 real evaluation만 안내 후 skip
+- 실제 provider transport까지 MASK된 개인정보만 전달하는 단위 테스트
+- `omni-moderation-latest` `/v1/moderations` provider 격리 구현
+- `flagged`, 동적 `categories`, `category_scores` 보존과 native category 통계
+- provider-native category를 core reason에 억지로 매핑하지 않고 hybrid에서 `OTHER` 처리
+- 순차 호출과 250ms 간격, HTTP status/429/timeout/network latency 계측
+- 무료 Moderation API 전용 5-way frozen evaluation task
+- Moderation API serialized body까지 MASK된 개인정보만 전달하는 테스트
+- Moderation API frozen 108건 live 199회 호출 완료, error/timeout/429 0건, 비용 $0
+- Moderation API-only accuracy 49.07%, precision 100%, recall 14.06%, FPR 0%, FNR 85.94%
+- `DIRECT_ABUSE` / `MENTION_OR_REPORT` 정책 계약과 historical ambiguous label 목록
+- 기존 108건과 분리된 calibration 220건 및 sealed holdout 165건
+- native category score positive/negative min/median/p90/p95/max 분석
+- abuse/sexual threshold grid와 calibration FPR ceiling 기반 선택기
+- threshold 선택 이후에만 holdout을 로드하는 5-way evaluation runner
 
 ## 아직 구현하지 않은 것
 
 - Spring 연동
 - Redis 연동
-- 실제 AI provider 연동 및 frozen dataset 기반 비교
+- 실제 credential을 사용한 Responses/Moderation API frozen dataset 결과 수집 및 비교
+- 새 calibration/holdout 실제 score 수집과 threshold 확정
 - WebSocket 연동
 - Grafana metric
 
 ## 다음 작업
 
-실제 AI를 검토한다면 Phase 3.10의 provider abstraction을 격리 구현으로 교체하고,
-동일 dataset에서 정확도/FPR/호출률/latency/비용을 먼저 측정한다. YoungManRest_BE,
+`OPENAI_API_KEY`를 process environment에만 설정하고
+`./gradlew realSemanticModerationEvaluation`을 실행해 frozen dataset의 실제 결과를
+수집한다. 무료 Moderation API는 `./gradlew openAiModerationEvaluation`로 별도 실행한다.
+Phase 3.12는 `./gradlew moderationScoreCalibration`로 실행한다. 새 calibration/holdout
+결과 전에는 score threshold나 도입 가치를 결론내리지 않는다. YoungManRest_BE,
 original ↔ normalized offset mapping, Redis와 Spring adapter는 별도 Phase로 유지한다.

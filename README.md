@@ -57,7 +57,8 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-Phase 3.10까지 완료되어 다음 순수 Java Core 및 검증 환경을 포함합니다.
+Phase 3.11b까지 완료되었고, Phase 3.12 score calibration 구현은 완료되어 새 dataset의
+credential 기반 실행을 기다리고 있습니다. 다음 순수 Java Core 및 검증 환경을 포함합니다.
 
 - Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
 - 한 번 구축한 automaton을 재사용하는 Aho-Corasick Keyword Matcher
@@ -76,6 +77,11 @@ Phase 3.10까지 완료되어 다음 순수 Java Core 및 검증 환경을 포�
 - 제한된 `/`, shorthand/known alias, scheme-less URL calibration
 - production core와 분리된 semantic provider/routing 실험 harness
 - 108건 semantic 전용 dataset과 deterministic/semantic/hybrid 비교 runner
+- OpenAI Responses API 기반 실제 semantic provider와 structured output parser
+- credential-gated 5-way 비교 및 network latency/token/cost 계측 runner
+- 무료 `omni-moderation-latest` 전용 provider와 native category 통계 runner
+- DIRECT_ABUSE/MENTION_OR_REPORT 정책과 220건 calibration/165건 sealed holdout
+- category score distribution 및 FPR 제한 기반 threshold 탐색 runner
 
 ## 로컬 테스트
 
@@ -92,7 +98,18 @@ Phase 3.10까지 완료되어 다음 순수 Java Core 및 검증 환경을 포�
 ./gradlew moderationEvaluation
 ./gradlew moderationBenchmark
 ./gradlew semanticModerationEvaluation
+./gradlew realSemanticModerationEvaluation
+./gradlew openAiModerationEvaluation
+./gradlew moderationScoreCalibration
 ```
+
+마지막 세 task는 `OPENAI_API_KEY`가 있을 때만 실제 API를 호출하며, 키가 없으면 안내 후
+skip됩니다. 설정은 [Real Semantic Experiment](docs/REAL_SEMANTIC_EXPERIMENT.md)와
+[OpenAI Moderation API Experiment](docs/OPENAI_MODERATION_API_EXPERIMENT.md)에 정리되어
+있습니다.
+
+정책 정의와 threshold 실험 절차는 [Policy Adjudication](docs/POLICY_ADJUDICATION.md),
+[Moderation Score Calibration](docs/MODERATION_SCORE_CALIBRATION.md)을 참고하세요.
 
 Corpus 형식과 검증 항목은 [Local Validation](docs/LOCAL_VALIDATION.md)에 정리되어 있습니다.
 

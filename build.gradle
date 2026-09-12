@@ -18,6 +18,7 @@ repositories {
 dependencies {
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
+    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
 }
 
 tasks.named('test') {
@@ -54,6 +55,30 @@ tasks.register('semanticModerationEvaluation', JavaExec) {
     description = 'Runs the local semantic moderation comparison experiment.'
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'dev.chatmoderation.validation.SemanticModerationEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('realSemanticModerationEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Runs the credential-gated real semantic provider comparison experiment.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.RealSemanticModerationEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('openAiModerationEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Runs the credential-gated free OpenAI Moderation API experiment.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.OpenAiModerationEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('moderationScoreCalibration', JavaExec) {
+    group = 'verification'
+    description = 'Calibrates Moderation API score thresholds and evaluates a sealed holdout.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.ModerationScoreCalibrationEvaluation'
     dependsOn testClasses
 }
 
