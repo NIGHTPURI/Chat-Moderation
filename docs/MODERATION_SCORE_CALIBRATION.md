@@ -2,9 +2,9 @@
 
 ## 상태
 
-정책, dataset, score distribution, threshold search와 sealed holdout runner 구현은 완료됐다.
-현재 프로세스에는 `OPENAI_API_KEY`가 없어 새 dataset의 실제 score 수집, threshold 확정,
-holdout 평가는 아직 실행하지 않았다.
+정책, dataset, score distribution, threshold search와 sealed holdout runner 구현 및 live
+default/custom threshold 실험은 완료됐다. 상세 category별 실행 출력은 현재 repository에
+별도 artifact로 보존돼 있지 않으므로 Phase 3.13에서 임의로 복원하지 않는다.
 
 기존 `semantic-evaluation.tsv` 108건은 historical benchmark로만 유지하며 calibration
 코드는 이 resource를 로드하지 않는다.

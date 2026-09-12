@@ -82,6 +82,14 @@ tasks.register('moderationScoreCalibration', JavaExec) {
     dependsOn testClasses
 }
 
+tasks.register('lunaBaselineEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Runs the credential-gated GPT-5.6 Luna-only and frozen-router baseline.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.LunaBaselineEvaluation'
+    dependsOn testClasses
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

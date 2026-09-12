@@ -47,6 +47,9 @@ public final class OpenAiSemanticModerationProvider implements SemanticModeratio
         try {
             TransportResponse response = transport.send(createRequestBody(message));
             if (response.statusCode() < 200 || response.statusCode() >= 300) {
+                if (response.statusCode() == 429) {
+                    telemetry.recordRateLimit();
+                }
                 telemetry.recordError();
                 return unknown(SemanticModerationResult.Status.ERROR);
             }
@@ -54,7 +57,8 @@ public final class OpenAiSemanticModerationProvider implements SemanticModeratio
             telemetry.recordSuccess(
                     parsed.inputTokens(),
                     parsed.cachedInputTokens(),
-                    parsed.outputTokens()
+                    parsed.outputTokens(),
+                    parsed.totalTokens()
             );
             return parsed.result();
         } catch (HttpTimeoutException exception) {
@@ -161,6 +165,7 @@ public final class OpenAiSemanticModerationProvider implements SemanticModeratio
         long cachedInputTokens = usage.path("input_tokens_details")
                 .path("cached_tokens").asLong(0);
         long outputTokens = usage.path("output_tokens").asLong(0);
+        long totalTokens = usage.path("total_tokens").asLong(inputTokens + outputTokens);
         return new ParsedResponse(
                 new SemanticModerationResult(
                         decision,
@@ -171,7 +176,8 @@ public final class OpenAiSemanticModerationProvider implements SemanticModeratio
                 ),
                 inputTokens,
                 cachedInputTokens,
-                outputTokens
+                outputTokens,
+                totalTokens
         );
     }
 
@@ -233,7 +239,8 @@ public final class OpenAiSemanticModerationProvider implements SemanticModeratio
             SemanticModerationResult result,
             long inputTokens,
             long cachedInputTokens,
-            long outputTokens
+            long outputTokens,
+            long totalTokens
     ) {
     }
 

@@ -101,6 +101,16 @@ Policy score calibration과 sealed holdout 평가는 다음 task로 실행한다
 후 165건 holdout을 평가한다. 상세 계약은
 [Moderation Score Calibration](MODERATION_SCORE_CALIBRATION.md)에 기록한다.
 
+GPT-5.6 Luna baseline은 별도 task로 실행한다.
+
+```bash
+./gradlew lunaBaselineEvaluation
+```
+
+이 task는 108건 semantic dataset과 Phase 3.12 sealed policy holdout을 변경 없이 읽는다.
+API key와 실행 시점 token 가격 세 변수가 모두 있어야 실제 호출하며, 상세 계약은
+[Luna Baseline Experiment](LUNA_BASELINE_EXPERIMENT.md)에 기록한다.
+
 ## Benchmark
 
 ```bash

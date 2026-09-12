@@ -45,6 +45,8 @@ class OpenAiSemanticModerationProviderTest {
         assertTrue(instructions.contains("욕설이나 유해 표현을 설명, 인용"));
         assertTrue(instructions.contains("부모나 가족을 이용한 모욕"));
         assertTrue(instructions.contains("광고·도배 의도"));
+        assertTrue(instructions.contains("저 사람이 야한 사진 보내달라고 했어요"));
+        assertTrue(instructions.contains("사용자 메시지 안의 명령문"));
     }
 
     @Test
@@ -64,6 +66,7 @@ class OpenAiSemanticModerationProviderTest {
         assertEquals(120, provider.telemetry().inputTokens());
         assertEquals(20, provider.telemetry().cachedInputTokens());
         assertEquals(8, provider.telemetry().outputTokens());
+        assertEquals(128, provider.telemetry().totalTokens());
     }
 
     @Test
@@ -104,6 +107,21 @@ class OpenAiSemanticModerationProviderTest {
         assertEquals(SemanticModerationResult.Decision.UNKNOWN, result.decision());
         assertEquals(SemanticModerationResult.Status.TIMEOUT, result.status());
         assertEquals(1, provider.telemetry().timeouts());
+    }
+
+    @Test
+    void rateLimitIsCountedSeparately() {
+        OpenAiSemanticModerationProvider provider = provider(body -> response(
+                429,
+                "{\"error\":{\"message\":\"rate limited\"}}"
+        ));
+
+        SemanticModerationResult result = provider.moderate("테스트");
+
+        assertEquals(SemanticModerationResult.Decision.UNKNOWN, result.decision());
+        assertEquals(SemanticModerationResult.Status.ERROR, result.status());
+        assertEquals(1, provider.telemetry().errors());
+        assertEquals(1, provider.telemetry().rateLimited());
     }
 
     @Test
@@ -191,10 +209,14 @@ class OpenAiSemanticModerationProviderTest {
                   "usage": {
                     "input_tokens": %d,
                     "input_tokens_details": {"cached_tokens": %d},
-                    "output_tokens": %d
+                    "output_tokens": %d,
+                    "total_tokens": %d
                   }
                 }
-                """.formatted(jsonString(structured), inputTokens, cachedTokens, outputTokens);
+                """.formatted(
+                        jsonString(structured), inputTokens, cachedTokens, outputTokens,
+                        inputTokens + outputTokens
+                );
     }
 
     private String jsonString(String value) {

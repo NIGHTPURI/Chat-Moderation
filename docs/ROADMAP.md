@@ -179,13 +179,33 @@
 
 현재 상태:
 - 정책, dataset, 분석/선택/holdout runner와 단위 테스트 구현 완료
-- credential이 없어 실제 score distribution, threshold와 holdout 결과는 미확정
+- live calibration/default/custom threshold 실험 완료
 
 완료 조건:
 - calibration 220건 실제 API score 수집
 - FPR ≤ 5% 우선순위로 threshold 확정
 - threshold 변경 없이 sealed holdout 165건 평가
 - default flagged 대비 개선과 서비스 도입 가치 판단
+
+---
+
+## Phase 3.13 — GPT-5.6 Luna Baseline Evaluation
+
+- frozen policy prompt와 `gpt-5.6-luna` Responses API baseline
+- 동일 Luna 판정을 공유하는 Luna-only / frozen-router counterfactual 비교
+- frozen semantic 108건과 Phase 3.12 sealed policy holdout 165건 평가
+- semantic candidate recall, routing rate, routed/missed BLOCK과 router loss 분석
+- request/success/error/timeout/429, latency와 token usage 계측
+- 실행 시점 configurable 가격에 기반한 실제 비용 및 월 운영 비용 simulation
+
+현재 상태:
+- prompt, runner, telemetry, cost projection과 단위 테스트 구현 완료
+- credential과 가격 설정이 없어 live baseline 결과는 미확정
+
+완료 조건:
+- Luna 273건 실제 Responses API 판정 수집
+- Luna-only와 frozen-router metrics/category/FP/FN 보고
+- omni 대비 개선폭, latency/token/cost 및 router 병목 판단
 
 ---
 

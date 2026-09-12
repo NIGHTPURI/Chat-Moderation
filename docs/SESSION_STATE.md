@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.12 — Policy Adjudication and Moderation Score Calibration 구현 완료, 실제 실행 대기
+Phase 3.13 — GPT-5.6 Luna Baseline Evaluation 구현 완료, 실제 실행 대기
 
 ## 완료된 것
 
@@ -65,21 +65,25 @@ Phase 3.12 — Policy Adjudication and Moderation Score Calibration 구현 완�
 - native category score positive/negative min/median/p90/p95/max 분석
 - abuse/sexual threshold grid와 calibration FPR ceiling 기반 선택기
 - threshold 선택 이후에만 holdout을 로드하는 5-way evaluation runner
+- Phase 3.12 live default/custom threshold 실험 완료
+- Phase 3.13 direct/report policy pair를 포함한 frozen Luna baseline prompt
+- 동일 Luna 판정을 공유하는 Luna-only/frozen-router 평가 runner
+- semantic candidate recall, routed/missed BLOCK 및 router 손실 사례 출력
+- Responses API 429와 total token telemetry
+- 실제 usage/configurable 가격 기반 평균 및 월 운영 비용 simulation
 
 ## 아직 구현하지 않은 것
 
 - Spring 연동
 - Redis 연동
-- 실제 credential을 사용한 Responses/Moderation API frozen dataset 결과 수집 및 비교
-- 새 calibration/holdout 실제 score 수집과 threshold 확정
+- GPT-5.6 Luna baseline 실제 API 결과 수집 및 omni 비교
 - WebSocket 연동
 - Grafana metric
 
 ## 다음 작업
 
-`OPENAI_API_KEY`를 process environment에만 설정하고
-`./gradlew realSemanticModerationEvaluation`을 실행해 frozen dataset의 실제 결과를
-수집한다. 무료 Moderation API는 `./gradlew openAiModerationEvaluation`로 별도 실행한다.
-Phase 3.12는 `./gradlew moderationScoreCalibration`로 실행한다. 새 calibration/holdout
-결과 전에는 score threshold나 도입 가치를 결론내리지 않는다. YoungManRest_BE,
+`OPENAI_API_KEY`와 실행 시점 Luna token 가격을 process environment에만 설정하고
+`./gradlew lunaBaselineEvaluation`을 실행한다. 결과를 본 뒤 prompt, frozen router,
+dataset을 수정하지 않고 Luna-only와 hybrid recall 차이 및 운영 비용을 판단한다.
+YoungManRest_BE,
 original ↔ normalized offset mapping, Redis와 Spring adapter는 별도 Phase로 유지한다.

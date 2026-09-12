@@ -152,3 +152,7 @@ Phase 3.12의 score threshold와 dataset도 `src/test`에만 존재한다. Thres
 provider의 `flagged` 기본 판정을 변경하지 않고 보존된 category score 위에 application
 policy 후보를 별도로 계산한다. Calibration과 holdout은 resource와 실행 순서가 분리되며,
 선택 과정은 historical semantic dataset이나 holdout 결과를 읽지 않는다.
+
+Phase 3.13 Luna baseline 역시 `src/test`에만 있다. 모든 메시지에서 얻은 동일한 Luna
+판정을 Luna-only와 frozen-router counterfactual에 함께 사용해 모델 변동성과 router
+손실을 분리한다. Production core와 router에는 변경을 가하지 않는다.
