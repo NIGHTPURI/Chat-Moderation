@@ -84,6 +84,7 @@ public final class DefaultModerationPolicy implements ModerationPolicy {
         defaults.put(ModerationReason.SPAM, ModerationAction.BLOCK);
         defaults.put(ModerationReason.HARASSMENT, ModerationAction.BLOCK);
         defaults.put(ModerationReason.OTHER, ModerationAction.BLOCK);
+        defaults.put(ModerationReason.SEXUAL_CONTENT, ModerationAction.BLOCK);
         return defaults;
     }
 

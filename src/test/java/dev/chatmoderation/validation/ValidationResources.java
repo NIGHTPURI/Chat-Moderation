@@ -9,17 +9,44 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.EnumMap;
+import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 final class ValidationResources {
     private static final String CORPUS_RESOURCE = "/moderation/corpus.tsv";
-    private static final String KEYWORDS_RESOURCE = "/moderation/validation-keywords.txt";
+    private static final String PROFANITY_RESOURCE = "/moderation/profanity-keywords.txt";
+    private static final String SEXUAL_RESOURCE = "/moderation/sexual-keywords.txt";
+    private static final String EXCEPTIONS_RESOURCE = "/moderation/keyword-exceptions.txt";
 
     private ValidationResources() {
     }
 
-    static List<String> loadKeywords() {
-        return readLines(KEYWORDS_RESOURCE).stream()
+    static Map<ModerationReason, Collection<String>> loadKeywordsByReason() {
+        Map<ModerationReason, Collection<String>> keywords = new EnumMap<>(ModerationReason.class);
+        keywords.put(ModerationReason.PROFANITY, readDictionary(PROFANITY_RESOURCE));
+        keywords.put(ModerationReason.SEXUAL_CONTENT, readDictionary(SEXUAL_RESOURCE));
+        return Map.copyOf(keywords);
+    }
+
+    static Map<String, Collection<String>> loadKeywordExceptions() {
+        Map<String, Collection<String>> exceptions = new LinkedHashMap<>();
+        for (String line : readDictionary(EXCEPTIONS_RESOURCE)) {
+            String[] columns = line.split("\t", -1);
+            if (columns.length != 2 || columns[0].isBlank() || columns[1].isBlank()) {
+                throw new IllegalArgumentException(
+                        EXCEPTIONS_RESOURCE + " entries must contain keyword and exception text"
+                );
+            }
+            exceptions.computeIfAbsent(columns[0], ignored -> new ArrayList<>()).add(columns[1]);
+        }
+        return Map.copyOf(exceptions);
+    }
+
+    private static List<String> readDictionary(String resourceName) {
+        return readLines(resourceName).stream()
                 .filter(line -> !line.isBlank())
                 .filter(line -> !line.startsWith("#"))
                 .toList();

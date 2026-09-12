@@ -72,6 +72,24 @@
 
 ---
 
+## Phase 3.5 — Local Validation Harness
+
+- 수동 Playground
+- corpus parameterized test
+- 개발용 benchmark
+- backend persistence 계약 simulation
+
+---
+
+## Phase 3.6 — Dictionary & False Positive Refinement
+
+- PROFANITY / SEXUAL_CONTENT 사전 분리
+- 단일 automaton에서 category metadata 유지
+- keyword별 false-positive exception
+- 애매한 문맥 단어는 unconditional BLOCK에서 제외
+
+---
+
 ## Phase 4 — Spring Adapter
 
 별도 모듈 또는 패키지로 추가 고려.

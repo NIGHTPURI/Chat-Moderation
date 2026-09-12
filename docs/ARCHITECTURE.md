@@ -78,6 +78,7 @@ Phase 1에는 넣지 않아도 된다.
 
 예:
 - PROFANITY -> BLOCK
+- SEXUAL_CONTENT -> BLOCK
 - PHONE_NUMBER -> MASK
 - URL -> 정책에 따라 BLOCK/ALLOW
 
@@ -85,6 +86,10 @@ Keyword Matcher의 index는 normalized 문자열 기준이므로 reason-only fin
 정책에 전달한다. Rule Filter는 양끝 공백을 제거한 canonical 원문에서 실행하며,
 MASK에는 RuleMatch의 canonical 원문 range만 사용한다. normalized index와 원문
 range 사이의 offset mapping은 현재 구현하지 않는다.
+
+PROFANITY와 SEXUAL_CONTENT keyword 및 false-positive exception은 하나의
+Aho-Corasick automaton으로 구축한다. Match된 normalized token을 category metadata로
+변환하며, exception은 명시적으로 연결된 keyword의 range를 덮는 match만 무효화한다.
 
 ## 4. Spring Integration
 

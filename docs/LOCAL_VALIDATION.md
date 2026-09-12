@@ -9,8 +9,14 @@
 ```
 
 한 줄에 메시지 하나를 입력한다. 각 입력에 대해 `action`, `reasons`,
-`outputMessage`를 출력하며 EOF(`Ctrl-D`)로 종료한다. Keyword는
-`src/test/resources/moderation/validation-keywords.txt`에서 읽는다.
+`outputMessage`를 출력하며 EOF(`Ctrl-D`)로 종료한다. 사전은 다음 resource에서 읽는다.
+
+- `profanity-keywords.txt`
+- `sexual-keywords.txt`
+- `keyword-exceptions.txt`
+
+Exception 파일은 `차단 keyword<TAB>허용 표현` 형식이다. 현재 `시발<TAB>시발점`은
+`시발점`이 덮는 `시발` match만 무효화하고 같은 메시지의 다른 욕설에는 영향을 주지 않는다.
 
 ## Corpus
 
@@ -20,13 +26,17 @@
 category  message  expectedAction  expectedReason  expectedOutput
 ```
 
-- category: `NORMAL`, `PROFANITY`, `PHONE`, `EMAIL`, `URL`, `SPAM`, `EDGE_CASE`
+- category: `NORMAL`, `PROFANITY`, `SEXUAL_CONTENT`, `PHONE`, `EMAIL`, `URL`, `SPAM`, `EDGE_CASE`
 - expectedReason: 검증하지 않을 때 `-`
 - expectedOutput: 검증하지 않을 때 `-`, BLOCK output은 `<NULL>`, 빈 output은 `<EMPTY>`
 - message와 output 안의 `\t`, `\n`은 실제 탭과 줄바꿈으로 해석한다.
 
 JUnit parameterized test가 모든 행을 독립된 test case로 실행한다. 별도 coverage
 test는 corpus가 200건 이상이며 모든 category를 포함하는지 확인한다.
+
+`보지`, `자지`, `애널`은 정상 문맥과 구분할 context rule이 없으므로 unconditional
+사전에서 제외한다. 숫자/공백 삽입, 초성, 자모 변형, 유사문자, leetspeak 탐지는
+Phase 3.7 이전에는 수행하지 않는다.
 
 ## Benchmark
 

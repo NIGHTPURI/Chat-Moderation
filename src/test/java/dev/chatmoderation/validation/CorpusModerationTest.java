@@ -19,7 +19,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class CorpusModerationTest {
     private static final List<CorpusCase> CORPUS = ValidationResources.loadCorpus();
     private static final ChatModerationService SERVICE = new DefaultChatModerationService(
-            ValidationResources.loadKeywords()
+            ValidationResources.loadKeywordsByReason(),
+            ValidationResources.loadKeywordExceptions()
     );
 
     @ParameterizedTest(name = "[{index}] {0}")

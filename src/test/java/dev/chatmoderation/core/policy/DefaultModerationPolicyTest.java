@@ -53,6 +53,37 @@ class DefaultModerationPolicyTest {
     }
 
     @Test
+    void blocksSexualContentByDefault() {
+        ModerationResult result = policy.decide(
+                "sexual content",
+                List.of(ModerationReason.SEXUAL_CONTENT),
+                List.of()
+        );
+
+        assertFalse(result.allowed());
+        assertEquals(ModerationAction.BLOCK, result.action());
+        assertEquals(List.of(ModerationReason.SEXUAL_CONTENT), result.reasons());
+    }
+
+    @Test
+    void canConfigureSexualContentToAllow() {
+        ModerationPolicy configured = new DefaultModerationPolicy(Map.of(
+                ModerationReason.SEXUAL_CONTENT,
+                ModerationAction.ALLOW
+        ));
+
+        ModerationResult result = configured.decide(
+                "sexual content",
+                List.of(ModerationReason.SEXUAL_CONTENT),
+                List.of()
+        );
+
+        assertTrue(result.allowed());
+        assertEquals(ModerationAction.ALLOW, result.action());
+        assertEquals(List.of(ModerationReason.SEXUAL_CONTENT), result.reasons());
+    }
+
+    @Test
     void rejectsMaskForReasonOnlyFindingWithoutOriginalRange() {
         ModerationPolicy configured = new DefaultModerationPolicy(Map.of(
                 ModerationReason.PROFANITY,

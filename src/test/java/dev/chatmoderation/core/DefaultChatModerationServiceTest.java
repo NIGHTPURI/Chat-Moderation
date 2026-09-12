@@ -12,11 +12,13 @@ import dev.chatmoderation.core.rule.RuleMatch;
 import org.junit.jupiter.api.Test;
 
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicReference;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultChatModerationServiceTest {
@@ -169,6 +171,76 @@ class DefaultChatModerationServiceTest {
         assertEquals(message.indexOf("user@example.com"), emailMatch.startIndex());
         assertEquals("user@example.com", emailMatch.matchedText());
         assertBlockedFor(result, ModerationReason.PROFANITY, ModerationReason.PERSONAL_INFORMATION);
+    }
+
+    @Test
+    void reportsKeywordCategoryFromSingleDictionaryConfiguration() {
+        ChatModerationService service = categorizedService();
+
+        assertBlockedFor(service.moderate("씨발아"), ModerationReason.PROFANITY);
+        assertBlockedFor(service.moderate("포르노"), ModerationReason.SEXUAL_CONTENT);
+    }
+
+    @Test
+    void reportsBothCategoriesWhenBothAreFound() {
+        ChatModerationService service = categorizedService();
+
+        assertBlockedFor(
+                service.moderate("씨발 섹스"),
+                ModerationReason.PROFANITY,
+                ModerationReason.SEXUAL_CONTENT
+        );
+    }
+
+    @Test
+    void exceptionInvalidatesOnlyTheCoveredKeywordMatch() {
+        ChatModerationService service = categorizedService();
+
+        assertAllowed(service.moderate("문제의 시발점은 여기다"), ModerationAction.ALLOW);
+        assertBlockedFor(
+                service.moderate("시발점에서 시작했지만 시발아"),
+                ModerationReason.PROFANITY
+        );
+    }
+
+    @Test
+    void exceptionDoesNotSuppressProfanityWithDifferentSuffixes() {
+        ChatModerationService service = categorizedService();
+
+        assertBlockedFor(service.moderate("시발"), ModerationReason.PROFANITY);
+        assertBlockedFor(service.moderate("시발아"), ModerationReason.PROFANITY);
+        assertBlockedFor(service.moderate("시발놈"), ModerationReason.PROFANITY);
+    }
+
+    @Test
+    void exceptionDoesNotSuppressAnotherKeywordInsideTheSameText() {
+        ChatModerationService service = new DefaultChatModerationService(
+                Map.of(ModerationReason.PROFANITY, List.of("시발", "발점")),
+                Map.of("시발", List.of("시발점"))
+        );
+
+        assertBlockedFor(service.moderate("시발점"), ModerationReason.PROFANITY);
+    }
+
+    @Test
+    void rejectsExceptionThatEqualsBlockingKeyword() {
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> new DefaultChatModerationService(
+                        Map.of(ModerationReason.PROFANITY, List.of("시발")),
+                        Map.of("시발", List.of(" 시발 "))
+                )
+        );
+    }
+
+    private ChatModerationService categorizedService() {
+        return new DefaultChatModerationService(
+                Map.of(
+                        ModerationReason.PROFANITY, List.of("시발", "씨발"),
+                        ModerationReason.SEXUAL_CONTENT, List.of("섹스", "포르노")
+                ),
+                Map.of("시발", List.of("시발점"))
+        );
     }
 
     private ChatModerationService serviceWith(String keyword) {

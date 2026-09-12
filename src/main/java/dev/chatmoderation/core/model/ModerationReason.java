@@ -6,5 +6,6 @@ public enum ModerationReason {
     URL,
     SPAM,
     HARASSMENT,
-    OTHER
+    OTHER,
+    SEXUAL_CONTENT
 }

@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.5 — Local Validation Harness 완료
+Phase 3.6 — Moderation Dictionary & False Positive Refinement 완료
 
 ## 완료된 것
 
@@ -28,6 +28,9 @@ Phase 3.5 — Local Validation Harness 완료
 - 수동 Moderation Playground
 - 비게이팅 System.nanoTime benchmark runner
 - YoungManRest_BE persistence 계약 simulation test
+- PROFANITY/SEXUAL_CONTENT category 사전과 기본 BLOCK 정책
+- category와 exception을 함께 구축한 단일 Aho-Corasick automaton
+- keyword별 false-positive exception (`시발` -> `시발점`)
 
 ## 아직 구현하지 않은 것
 
@@ -39,12 +42,13 @@ Phase 3.5 — Local Validation Harness 완료
 
 ## 다음 작업
 
-Phase 4를 진행할 때 Core와 분리된 Spring Adapter를 설계한다.
+Phase 3.7에서 별도 normalization 정책과 false-positive 회귀 테스트를 먼저 설계한다.
 
-1. YoungManRest_BE에서 Core를 포함할 방식 결정
-2. keyword 설정을 읽어 서비스 인스턴스를 한 번 구성
-3. WebSocket broadcast 전에 `moderate(message)` 호출
-4. ALLOW/MASK만 `outputMessage()`로 broadcast하고 BLOCK은 중단
+1. 숫자 삽입: `씨1발`, `지1랄`, `병1신`, `섹1스`
+2. 공백 삽입: `씨 발`
+3. 초성 표현: `ㅅㅂ`, `ㅆㅂ`
+4. 자모 변형, 유사문자, leetspeak
 
+그 이후 Phase 4에서 YoungManRest_BE와 Core를 분리한 Spring Adapter를 설계한다.
 original ↔ normalized offset mapping, Redis, AI moderation은 각각의 이후 Phase까지
 추가하지 않는다.

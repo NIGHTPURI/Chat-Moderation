@@ -1,0 +1,2 @@
+# blocking keyword<TAB>exception text
+시발	시발점

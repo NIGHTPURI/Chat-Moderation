@@ -13,12 +13,13 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class BackendContractSimulationTest {
     private final ChatModerationService service = new DefaultChatModerationService(
-            ValidationResources.loadKeywords()
+            ValidationResources.loadKeywordsByReason(),
+            ValidationResources.loadKeywordExceptions()
     );
 
     @Test
     void blockHasNoContentForPersistence() {
-        Optional<String> content = contentForPersistence(service.moderate("금칙어"));
+        Optional<String> content = contentForPersistence(service.moderate("씨발"));
 
         assertTrue(content.isEmpty());
     }

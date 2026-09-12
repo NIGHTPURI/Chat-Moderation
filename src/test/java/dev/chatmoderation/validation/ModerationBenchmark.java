@@ -19,7 +19,8 @@ public final class ModerationBenchmark {
                 ? DEFAULT_MEASURED_ROUNDS
                 : parsePositiveRounds(args[0]);
         ChatModerationService service = new DefaultChatModerationService(
-                ValidationResources.loadKeywords()
+                ValidationResources.loadKeywordsByReason(),
+                ValidationResources.loadKeywordExceptions()
         );
         List<String> messages = ValidationResources.loadCorpus().stream()
                 .map(CorpusCase::message)

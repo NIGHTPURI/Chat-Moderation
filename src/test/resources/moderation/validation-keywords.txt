@@ -1,9 +1,0 @@
-# Phase 3.5 local validation keywords
-금칙어
-욕설
-BADWORD
-시발
-  차단어  
-카페폭언
-악플
-금칙어
