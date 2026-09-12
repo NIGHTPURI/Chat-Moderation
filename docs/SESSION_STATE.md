@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.13 — GPT-5.6 Luna Baseline Evaluation 구현 완료, 실제 실행 대기
+Phase 3.14 — High-Recall Semantic Router Redesign 완료, 성공 기준 미달
 
 ## 완료된 것
 
@@ -71,19 +71,29 @@ Phase 3.13 — GPT-5.6 Luna Baseline Evaluation 구현 완료, 실제 실행 대
 - semantic candidate recall, routed/missed BLOCK 및 router 손실 사례 출력
 - Responses API 429와 total token telemetry
 - 실제 usage/configurable 가격 기반 평균 및 월 운영 비용 simulation
+- Phase 3.13 Luna policy holdout accuracy 98.79%, recall 97.33%, FPR 0%
+- 기존 frozen router + Luna recall 24.00%, semantic candidate recall 25.33%
+- historical dataset과 분리된 router calibration 336건과 sealed holdout 224건
+- `LOCAL_FINAL` / `NEEDS_SEMANTIC_REVIEW` 전용 high-recall router
+- calibration candidate recall 100%, routing rate 50%, routed ALLOW 0
+- sealed holdout candidate recall 87.50%, routing rate 43.75%, missed BLOCK 14
+- frozen router 대비 candidate recall +57.14 percentage point
+- historical Luna request cost 기반 월 1만~1000만 비용 projection
+- holdout 95% 기준 미달로 production 후보 미채택
 
 ## 아직 구현하지 않은 것
 
 - Spring 연동
 - Redis 연동
-- GPT-5.6 Luna baseline 실제 API 결과 수집 및 omni 비교
+- 새 router holdout의 optional 실제 Luna A/B/C 비교
 - WebSocket 연동
 - Grafana metric
 
 ## 다음 작업
 
-`OPENAI_API_KEY`와 실행 시점 Luna token 가격을 process environment에만 설정하고
-`./gradlew lunaBaselineEvaluation`을 실행한다. 결과를 본 뒤 prompt, frozen router,
-dataset을 수정하지 않고 Luna-only와 hybrid recall 차이 및 운영 비용을 판단한다.
-YoungManRest_BE,
+현재 Phase 3.14 router는 sealed holdout candidate recall 95% 기준에 미달했으므로
+production에 연결하지 않는다. 실제 Luna A/B/C 확인이 필요하면 `OPENAI_API_KEY`를 process
+environment에만 설정하고 `./gradlew highRecallRouterLunaEvaluation`을 실행한다. Router와
+holdout은 더 이상 수정하지 않는다. 다음 router iteration은 새로운 Phase와 새로운
+calibration/holdout으로 시작해야 한다. YoungManRest_BE,
 original ↔ normalized offset mapping, Redis와 Spring adapter는 별도 Phase로 유지한다.

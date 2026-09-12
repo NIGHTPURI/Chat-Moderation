@@ -111,6 +111,17 @@ GPT-5.6 Luna baseline은 별도 task로 실행한다.
 API key와 실행 시점 token 가격 세 변수가 모두 있어야 실제 호출하며, 상세 계약은
 [Luna Baseline Experiment](LUNA_BASELINE_EXPERIMENT.md)에 기록한다.
 
+Phase 3.14 router calibration과 sealed holdout은 API 없이 실행한다.
+
+```bash
+./gradlew highRecallRouterCalibration
+./gradlew highRecallRouterEvaluation
+```
+
+새 holdout의 실제 Luna A/B/C 비교가 필요하면 `OPENAI_API_KEY`를 process environment에
+설정하고 `./gradlew highRecallRouterLunaEvaluation`을 실행한다. 상세 결과와 실패 기준은
+[High-Recall Router Experiment](HIGH_RECALL_ROUTER_EXPERIMENT.md)에 기록한다.
+
 ## Benchmark
 
 ```bash

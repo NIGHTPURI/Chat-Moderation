@@ -90,6 +90,30 @@ tasks.register('lunaBaselineEvaluation', JavaExec) {
     dependsOn testClasses
 }
 
+tasks.register('highRecallRouterCalibration', JavaExec) {
+    group = 'verification'
+    description = 'Evaluates the Phase 3.14 router on calibration data only.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.HighRecallRouterCalibrationEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('highRecallRouterEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Evaluates frozen and high-recall routers on the sealed Phase 3.14 holdout.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.HighRecallRouterHoldoutEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('highRecallRouterLunaEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Runs the optional live Luna comparison on the sealed router holdout.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.HighRecallRouterLunaEvaluation'
+    dependsOn testClasses
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

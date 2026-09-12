@@ -2,8 +2,8 @@
 
 ## 상태
 
-Baseline prompt, frozen-router 비교 runner, telemetry와 비용 simulation 구현은 완료됐다.
-현재 프로세스에는 `OPENAI_API_KEY`와 가격 환경변수가 없어 live 평가는 실행하지 않았다.
+Baseline prompt, frozen-router 비교 runner, telemetry와 비용 simulation 및 live policy
+holdout 평가는 완료됐다.
 
 이번 Phase에서는 결과를 본 뒤 prompt, router, deterministic core 또는 dataset을 수정하지
 않는다.
@@ -96,4 +96,13 @@ Runner는 Luna의 aggregate 개선폭을 출력한다. Phase 3.12의 omni catego
 현재 repository에 저장돼 있지 않으므로 수치를 만들어내지 않는다. Luna policy category
 표를 출력해 보존된 Phase 3.12 실행 보고와 직접 비교할 수 있게 한다.
 
-Live 결과가 없으므로 Luna 도입 가치와 router 개선 필요성은 아직 결론내리지 않는다.
+## Recorded policy holdout result
+
+- Luna-only: accuracy 98.79%, precision 100%, recall 97.33%, FPR 0%
+- TP 73, TN 90, FP 0, FN 2
+- Frozen router + Luna: accuracy 65.45%, recall 24.00%, FPR 0%
+- Semantic candidate recall 25.33%, routed BLOCK 19, missed BLOCK 56
+- Historical average cost/request: `$0.00014119`
+
+Luna 자체는 semantic provider 후보로 충분하지만 frozen router가 심각한 병목이라는 결론을
+Phase 3.14 입력으로 사용한다.

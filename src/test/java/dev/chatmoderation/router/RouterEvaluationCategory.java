@@ -1,0 +1,19 @@
+package dev.chatmoderation.router;
+
+public enum RouterEvaluationCategory {
+    DIRECT_INSULT,
+    INDIRECT_INSULT,
+    FAMILY_INSULT,
+    DIRECT_SEXUAL_REQUEST,
+    SEXUAL_HARASSMENT,
+    ADVERTISEMENT,
+    NEW_SLANG,
+    NORMAL_CHAT,
+    REPORT_OF_ABUSE,
+    QUOTED_ABUSE,
+    EDUCATIONAL,
+    BENIGN_HOMONYM,
+    PROPER_NOUN,
+    TECHNICAL_TERM,
+    NORMAL_CRITICISM
+}

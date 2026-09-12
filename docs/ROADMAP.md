@@ -199,13 +199,37 @@
 - 실행 시점 configurable 가격에 기반한 실제 비용 및 월 운영 비용 simulation
 
 현재 상태:
-- prompt, runner, telemetry, cost projection과 단위 테스트 구현 완료
-- credential과 가격 설정이 없어 live baseline 결과는 미확정
+- prompt, runner, telemetry, cost projection과 단위 테스트 및 live baseline 완료
+- policy holdout Luna-only accuracy 98.79%, precision 100%, recall 97.33%, FPR 0%
+- frozen router + Luna recall 24.00%, candidate recall 25.33%로 router 병목 확인
 
 완료 조건:
 - Luna 273건 실제 Responses API 판정 수집
 - Luna-only와 frozen-router metrics/category/FP/FN 보고
 - omni 대비 개선폭, latency/token/cost 및 router 병목 판단
+
+---
+
+## Phase 3.14 — High-Recall Semantic Router Redesign
+
+- historical dataset과 분리된 balanced calibration 336건
+- router 동결 후 생성한 sealed holdout 224건
+- `LOCAL_FINAL` / `NEEDS_SEMANTIC_REVIEW`만 출력하는 test-only router
+- 가족·성적·요구형·평가·2인칭·광고·신조어 lexical/structural signal
+- semantic candidate recall 우선 평가 및 historical cost projection
+- label-oracle offline 비교와 optional Luna live comparison
+
+결과:
+- calibration: candidate recall 100%, routing rate 50%, routed ALLOW 0
+- sealed holdout: candidate recall 87.50%, routing rate 43.75%, routed ALLOW 0
+- frozen router 대비 candidate recall +57.14 percentage point
+- 목표 95% 미달로 production 후보 채택 안 함
+- holdout 결과를 본 뒤 router 수정 없음
+
+완료 조건 판단:
+- candidate recall ≥95%: 실패
+- recall 우선 조건 안에서 routing rate 최소화: calibration에서 달성, holdout 일반화 실패
+- production 도입: 보류
 
 ---
 

@@ -156,3 +156,9 @@ policy 후보를 별도로 계산한다. Calibration과 holdout은 resource와 �
 Phase 3.13 Luna baseline 역시 `src/test`에만 있다. 모든 메시지에서 얻은 동일한 Luna
 판정을 Luna-only와 frozen-router counterfactual에 함께 사용해 모델 변동성과 router
 손실을 분리한다. Production core와 router에는 변경을 가하지 않는다.
+
+Phase 3.14의 `HighRecallSemanticRouter`도 test experiment boundary 안에 있다. 출력은
+`LOCAL_FINAL`과 `NEEDS_SEMANTIC_REVIEW`뿐이며 moderation action을 결정하지 않는다.
+Deterministic BLOCK/MASK를 local final로 보존하고 deterministic ALLOW 중 lexical/structural
+candidate만 선택한다. Sealed holdout 성공 기준을 통과하지 못했으므로 production 경로에는
+연결하지 않는다.
