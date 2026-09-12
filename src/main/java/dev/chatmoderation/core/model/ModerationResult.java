@@ -29,4 +29,13 @@ public record ModerationResult(
                 null
         );
     }
+
+    public static ModerationResult mask(String message, List<ModerationReason> reasons) {
+        return new ModerationResult(
+                true,
+                ModerationAction.MASK,
+                reasons,
+                message
+        );
+    }
 }

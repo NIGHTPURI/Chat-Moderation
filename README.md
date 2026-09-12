@@ -57,13 +57,15 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-Phase 1이 완료되어 다음 순수 Java Core 구현을 포함합니다.
+Phase 2가 완료되어 다음 순수 Java Core 구현을 포함합니다.
 
 - Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
 - 한 번 구축한 automaton을 재사용하는 Aho-Corasick Keyword Matcher
 - 중복·중첩·한글 패턴을 포함한 JUnit 5 테스트
+- 전화번호, 이메일, URL, 과도한 동일 문자 반복 Rule
+- 탐지 reason을 ALLOW, MASK, BLOCK으로 변환하는 Moderation Policy
 
-Rule Filter와 Policy 조합은 이후 Phase에서 구현합니다.
+전체 처리 흐름을 조합하는 ChatModerationService는 Phase 3에서 구현합니다.
 
 ## 로컬 테스트
 
