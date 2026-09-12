@@ -81,6 +81,11 @@ Phase 1에는 넣지 않아도 된다.
 - PHONE_NUMBER -> MASK
 - URL -> 정책에 따라 BLOCK/ALLOW
 
+Keyword Matcher의 index는 normalized 문자열 기준이므로 reason-only finding으로
+정책에 전달한다. Rule Filter는 양끝 공백을 제거한 canonical 원문에서 실행하며,
+MASK에는 RuleMatch의 canonical 원문 range만 사용한다. normalized index와 원문
+range 사이의 offset mapping은 현재 구현하지 않는다.
+
 ## 4. Spring Integration
 
 최종 Spring 프로젝트에서는 Core 외부에 Adapter를 둔다.

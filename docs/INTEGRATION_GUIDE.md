@@ -16,6 +16,9 @@ if (!result.allowed()) {
 broadcast(result.outputMessage());
 ```
 
+`ALLOW`는 양끝 공백이 제거된 canonical message를, `MASK`는 개인정보가 마스킹된
+canonical message를 반환한다. `BLOCK`은 `allowed == false`이며 output은 `null`이다.
+
 ## Spring WebSocket 예상 적용 지점
 
 ```text

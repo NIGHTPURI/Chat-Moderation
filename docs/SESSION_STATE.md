@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 2 — Rule Filter + Moderation Policy 완료
+Phase 3 — ChatModerationService 완료
 
 ## 완료된 것
 
@@ -20,10 +20,13 @@ Phase 2 — Rule Filter + Moderation Policy 완료
 - Rule 결과 모델 및 기본 Rule Filter
 - reason별로 설정 가능한 ALLOW/MASK/BLOCK 정책
 - 정상 숫자/날짜/유사 문자열/짧은 반복 false positive 테스트
+- Normalizer, Keyword Matcher, Rule Filter, Policy 조합 서비스
+- keyword 목록 사전 normalization 및 automaton 재사용
+- normalized keyword reason-only finding과 canonical RuleMatch range 분리
+- ALLOW/MASK/BLOCK 전체 흐름 integration test
 
 ## 아직 구현하지 않은 것
 
-- ChatModerationService 조합 구현
 - Spring 연동
 - Redis 연동
 - AI Moderation
@@ -32,11 +35,12 @@ Phase 2 — Rule Filter + Moderation Policy 완료
 
 ## 다음 작업
 
-Phase 3을 진행할 때 아래 범위만 구현한다.
+Phase 4를 진행할 때 Core와 분리된 Spring Adapter를 설계한다.
 
-1. Normalizer, KeywordMatcher, RuleFilter, Policy 조합
-2. 외부 진입점을 `moderate(message)`로 단순화
-3. 전체 처리 흐름 integration test
-4. broadcast 전에 호출하는 Core 사용 계약 문서화
+1. YoungManRest_BE에서 Core를 포함할 방식 결정
+2. keyword 설정을 읽어 서비스 인스턴스를 한 번 구성
+3. WebSocket broadcast 전에 `moderate(message)` 호출
+4. ALLOW/MASK만 `outputMessage()`로 broadcast하고 BLOCK은 중단
 
-Spring 관련 코드는 Phase 4 전까지 만들지 않는다.
+original ↔ normalized offset mapping, Redis, AI moderation은 각각의 이후 Phase까지
+추가하지 않는다.

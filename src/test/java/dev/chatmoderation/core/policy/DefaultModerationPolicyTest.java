@@ -12,6 +12,7 @@ import java.util.Map;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertNull;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class DefaultModerationPolicyTest {
@@ -41,13 +42,31 @@ class DefaultModerationPolicyTest {
     }
 
     @Test
-    void blocksProfanityFoundInNormalizedMessage() {
+    void blocksReasonOnlyProfanityWithoutOriginalRange() {
         ModerationResult result = policy.decide(
                 "BAD word",
-                List.of(new RuleMatch(ModerationReason.PROFANITY, "bad", 0, 3))
+                List.of(ModerationReason.PROFANITY),
+                List.of()
         );
 
         assertEquals(ModerationAction.BLOCK, result.action());
+    }
+
+    @Test
+    void rejectsMaskForReasonOnlyFindingWithoutOriginalRange() {
+        ModerationPolicy configured = new DefaultModerationPolicy(Map.of(
+                ModerationReason.PROFANITY,
+                ModerationAction.MASK
+        ));
+
+        assertThrows(
+                IllegalArgumentException.class,
+                () -> configured.decide(
+                        "BAD word",
+                        List.of(ModerationReason.PROFANITY),
+                        List.of()
+                )
+        );
     }
 
     @Test

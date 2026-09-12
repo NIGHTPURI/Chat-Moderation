@@ -31,16 +31,30 @@ public final class DefaultModerationPolicy implements ModerationPolicy {
     }
 
     @Override
-    public ModerationResult decide(String originalMessage, List<RuleMatch> matches) {
-        Objects.requireNonNull(originalMessage, "originalMessage must not be null");
-        Objects.requireNonNull(matches, "matches must not be null");
+    public ModerationResult decide(
+            String canonicalMessage,
+            List<ModerationReason> reasonOnlyFindings,
+            List<RuleMatch> originalMatches
+    ) {
+        Objects.requireNonNull(canonicalMessage, "canonicalMessage must not be null");
+        Objects.requireNonNull(reasonOnlyFindings, "reasonOnlyFindings must not be null");
+        Objects.requireNonNull(originalMatches, "originalMatches must not be null");
 
-        List<RuleMatch> checkedMatches = List.copyOf(matches);
-        validateMaskRanges(originalMessage, checkedMatches);
+        List<ModerationReason> checkedReasonOnlyFindings = List.copyOf(reasonOnlyFindings);
+        List<RuleMatch> checkedOriginalMatches = List.copyOf(originalMatches);
+        validateOriginalRanges(canonicalMessage, checkedOriginalMatches);
 
         Set<ModerationReason> reasons = new LinkedHashSet<>();
         ModerationAction finalAction = ModerationAction.ALLOW;
-        for (RuleMatch match : checkedMatches) {
+        for (ModerationReason reason : checkedReasonOnlyFindings) {
+            ModerationAction action = actions.get(reason);
+            if (action == ModerationAction.MASK) {
+                throw new IllegalArgumentException("MASK requires an original range");
+            }
+            reasons.add(reason);
+            finalAction = stronger(finalAction, action);
+        }
+        for (RuleMatch match : checkedOriginalMatches) {
             reasons.add(match.reason());
             finalAction = stronger(finalAction, actions.get(match.reason()));
         }
@@ -48,12 +62,15 @@ public final class DefaultModerationPolicy implements ModerationPolicy {
         List<ModerationReason> reasonList = List.copyOf(reasons);
         return switch (finalAction) {
             case BLOCK -> ModerationResult.block(reasonList);
-            case MASK -> ModerationResult.mask(mask(originalMessage, checkedMatches), reasonList);
+            case MASK -> ModerationResult.mask(
+                    mask(canonicalMessage, checkedOriginalMatches),
+                    reasonList
+            );
             case ALLOW -> new ModerationResult(
                     true,
                     ModerationAction.ALLOW,
                     reasonList,
-                    originalMessage
+                    canonicalMessage
             );
         };
     }
@@ -80,13 +97,12 @@ public final class DefaultModerationPolicy implements ModerationPolicy {
         return ModerationAction.ALLOW;
     }
 
-    private void validateMaskRanges(String message, List<RuleMatch> matches) {
+    private void validateOriginalRanges(String message, List<RuleMatch> matches) {
         for (RuleMatch match : matches) {
-            if (actions.get(match.reason()) == ModerationAction.MASK
-                    && (match.endIndex() > message.length()
+            if (match.endIndex() > message.length()
                     || !message.substring(match.startIndex(), match.endIndex())
-                    .equals(match.matchedText()))) {
-                throw new IllegalArgumentException("match does not belong to originalMessage");
+                    .equals(match.matchedText())) {
+                throw new IllegalArgumentException("match does not belong to canonicalMessage");
             }
         }
     }
