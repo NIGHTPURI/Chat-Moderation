@@ -57,7 +57,7 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-Phase 3.6까지 완료되어 다음 순수 Java Core 구현을 포함합니다.
+Phase 3.7까지 완료되어 다음 순수 Java Core 구현을 포함합니다.
 
 - Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
 - 한 번 구축한 automaton을 재사용하는 Aho-Corasick Keyword Matcher
@@ -68,6 +68,8 @@ Phase 3.6까지 완료되어 다음 순수 Java Core 구현을 포함합니다.
 - normalized keyword match와 canonical 원문 range를 분리하는 정책 계약
 - 단일 Aho-Corasick automaton을 사용하는 PROFANITY/SEXUAL_CONTENT 분류
 - keyword별로 적용 범위를 제한한 false-positive exception
+- canonical output과 분리된 dictionary-aware obfuscation detection view
+- 명시적 초성 및 known-variant alias
 
 ## 로컬 테스트
 

@@ -4,6 +4,7 @@ enum CorpusCategory {
     NORMAL,
     PROFANITY,
     SEXUAL_CONTENT,
+    OBFUSCATION,
     PHONE,
     EMAIL,
     URL,

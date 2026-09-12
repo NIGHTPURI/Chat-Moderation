@@ -20,6 +20,7 @@ final class ValidationResources {
     private static final String PROFANITY_RESOURCE = "/moderation/profanity-keywords.txt";
     private static final String SEXUAL_RESOURCE = "/moderation/sexual-keywords.txt";
     private static final String EXCEPTIONS_RESOURCE = "/moderation/keyword-exceptions.txt";
+    private static final String ALIASES_RESOURCE = "/moderation/obfuscation-aliases.tsv";
 
     private ValidationResources() {
     }
@@ -43,6 +44,21 @@ final class ValidationResources {
             exceptions.computeIfAbsent(columns[0], ignored -> new ArrayList<>()).add(columns[1]);
         }
         return Map.copyOf(exceptions);
+    }
+
+    static Map<ModerationReason, Collection<String>> loadAliasesByReason() {
+        Map<ModerationReason, Collection<String>> aliases = new EnumMap<>(ModerationReason.class);
+        for (String line : readDictionary(ALIASES_RESOURCE)) {
+            String[] columns = line.split("\t", -1);
+            if (columns.length != 2 || columns[0].isBlank() || columns[1].isBlank()) {
+                throw new IllegalArgumentException(
+                        ALIASES_RESOURCE + " entries must contain alias and reason"
+                );
+            }
+            ModerationReason reason = ModerationReason.valueOf(columns[1]);
+            aliases.computeIfAbsent(reason, ignored -> new ArrayList<>()).add(columns[0]);
+        }
+        return Map.copyOf(aliases);
     }
 
     private static List<String> readDictionary(String resourceName) {

@@ -90,6 +90,15 @@
 
 ---
 
+## Phase 3.7 — Obfuscation Detection
+
+- canonical output과 분리된 detection view
+- dictionary-aware 숫자/공백/제한된 separator 제거
+- 명시적 shorthand 및 known-variant alias
+- exception과 transformed view 상호작용 회귀 테스트
+
+---
+
 ## Phase 4 — Spring Adapter
 
 별도 모듈 또는 패키지로 추가 고려.

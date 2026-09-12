@@ -233,6 +233,75 @@ class DefaultChatModerationServiceTest {
         );
     }
 
+    @Test
+    void detectsNumericInsertionByKeywordCategory() {
+        ChatModerationService service = obfuscationService();
+
+        assertBlockedFor(service.moderate("씨1발"), ModerationReason.PROFANITY);
+        assertBlockedFor(service.moderate("지1랄"), ModerationReason.PROFANITY);
+        assertBlockedFor(service.moderate("병1신"), ModerationReason.PROFANITY);
+        assertBlockedFor(service.moderate("섹1스"), ModerationReason.SEXUAL_CONTENT);
+    }
+
+    @Test
+    void detectsSupportedSeparatorsOnlyBetweenKeywordSyllables() {
+        ChatModerationService service = obfuscationService();
+
+        for (String message : List.of("씨 발", "씨.발", "씨-발", "씨_발", "씨*발")) {
+            assertBlockedFor(service.moderate(message), ModerationReason.PROFANITY);
+        }
+        assertBlockedFor(service.moderate("섹 스"), ModerationReason.SEXUAL_CONTENT);
+    }
+
+    @Test
+    void detectsOnlyExplicitShorthandAndKnownVariantAliases() {
+        ChatModerationService service = obfuscationService();
+
+        for (String message : List.of("ㅅㅂ", "ㅆㅂ", "ㅈㄴ", "씨아발")) {
+            assertBlockedFor(service.moderate(message), ModerationReason.PROFANITY);
+        }
+    }
+
+    @Test
+    void appliesExceptionInsideSeparatorCollapsedViewOnlyToCoveredMatch() {
+        ChatModerationService service = obfuscationService();
+
+        assertAllowed(service.moderate("시 발점"), ModerationAction.ALLOW);
+        assertAllowed(service.moderate("시.발점"), ModerationAction.ALLOW);
+        assertBlockedFor(service.moderate("시 발아"), ModerationReason.PROFANITY);
+        assertBlockedFor(
+                service.moderate("시 발점 이후 씨 발"),
+                ModerationReason.PROFANITY
+        );
+    }
+
+    @Test
+    void keepsCanonicalOutputAndOriginalRuleRangesWhenUsingCollapsedView() {
+        ChatModerationService service = obfuscationService();
+
+        ModerationResult result = service.moderate("  시 발점 user@example.com  ");
+
+        assertMaskedFor(result, ModerationReason.PERSONAL_INFORMATION);
+        assertEquals("시 발점 ****************", result.outputMessage());
+    }
+
+    @Test
+    void preservesUnrelatedNumbersAndSeparators() {
+        ChatModerationService service = obfuscationService();
+
+        for (String message : List.of(
+                "2026년",
+                "Java21",
+                "GPT5",
+                "오늘 1시에 출발",
+                "버전 1.2.3",
+                "A-B 테스트",
+                "snake_case"
+        )) {
+            assertAllowed(service.moderate(message), ModerationAction.ALLOW);
+        }
+    }
+
     private ChatModerationService categorizedService() {
         return new DefaultChatModerationService(
                 Map.of(
@@ -240,6 +309,20 @@ class DefaultChatModerationServiceTest {
                         ModerationReason.SEXUAL_CONTENT, List.of("섹스", "포르노")
                 ),
                 Map.of("시발", List.of("시발점"))
+        );
+    }
+
+    private ChatModerationService obfuscationService() {
+        return new DefaultChatModerationService(
+                Map.of(
+                        ModerationReason.PROFANITY, List.of("시발", "씨발", "지랄", "병신"),
+                        ModerationReason.SEXUAL_CONTENT, List.of("섹스")
+                ),
+                Map.of("시발", List.of("시발점")),
+                Map.of(
+                        ModerationReason.PROFANITY,
+                        List.of("ㅅㅂ", "ㅆㅂ", "ㅈㄴ", "씨아발")
+                )
         );
     }
 

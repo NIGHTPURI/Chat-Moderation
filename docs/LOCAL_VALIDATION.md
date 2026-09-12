@@ -14,9 +14,12 @@
 - `profanity-keywords.txt`
 - `sexual-keywords.txt`
 - `keyword-exceptions.txt`
+- `obfuscation-aliases.tsv`
 
 Exception 파일은 `차단 keyword<TAB>허용 표현` 형식이다. 현재 `시발<TAB>시발점`은
 `시발점`이 덮는 `시발` match만 무효화하고 같은 메시지의 다른 욕설에는 영향을 주지 않는다.
+Alias 파일은 `alias<TAB>reason` 형식이며 `ㅅㅂ`, `ㅆㅂ`, `ㅈㄴ`, `씨아발`처럼
+검토된 표현만 등록한다.
 
 ## Corpus
 
@@ -26,7 +29,7 @@ Exception 파일은 `차단 keyword<TAB>허용 표현` 형식이다. 현재 `시
 category  message  expectedAction  expectedReason  expectedOutput
 ```
 
-- category: `NORMAL`, `PROFANITY`, `SEXUAL_CONTENT`, `PHONE`, `EMAIL`, `URL`, `SPAM`, `EDGE_CASE`
+- category: `NORMAL`, `PROFANITY`, `SEXUAL_CONTENT`, `OBFUSCATION`, `PHONE`, `EMAIL`, `URL`, `SPAM`, `EDGE_CASE`
 - expectedReason: 검증하지 않을 때 `-`
 - expectedOutput: 검증하지 않을 때 `-`, BLOCK output은 `<NULL>`, 빈 output은 `<EMPTY>`
 - message와 output 안의 `\t`, `\n`은 실제 탭과 줄바꿈으로 해석한다.
@@ -35,8 +38,11 @@ JUnit parameterized test가 모든 행을 독립된 test case로 실행한다. �
 test는 corpus가 200건 이상이며 모든 category를 포함하는지 확인한다.
 
 `보지`, `자지`, `애널`은 정상 문맥과 구분할 context rule이 없으므로 unconditional
-사전에서 제외한다. 숫자/공백 삽입, 초성, 자모 변형, 유사문자, leetspeak 탐지는
-Phase 3.7 이전에는 수행하지 않는다.
+사전에서 제외한다. 숫자/공백/제한된 구분자 삽입은 사전의 인접 한글 음절 쌍에
+한정해 detection view에서 제거한다. 범용 문자 삭제나 fuzzy matching은 사용하지 않는다.
+
+현재 지원하지 않는 `/`, `+`, `@` separator, 자모 변형, 유사문자, leetspeak,
+phonetic similarity는 corpus에서 허용 동작 또는 알려진 한계로 관리한다.
 
 ## Benchmark
 

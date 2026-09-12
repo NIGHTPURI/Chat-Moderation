@@ -20,7 +20,8 @@ class CorpusModerationTest {
     private static final List<CorpusCase> CORPUS = ValidationResources.loadCorpus();
     private static final ChatModerationService SERVICE = new DefaultChatModerationService(
             ValidationResources.loadKeywordsByReason(),
-            ValidationResources.loadKeywordExceptions()
+            ValidationResources.loadKeywordExceptions(),
+            ValidationResources.loadAliasesByReason()
     );
 
     @ParameterizedTest(name = "[{index}] {0}")

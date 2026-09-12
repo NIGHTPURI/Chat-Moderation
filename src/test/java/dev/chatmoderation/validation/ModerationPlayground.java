@@ -13,7 +13,8 @@ public final class ModerationPlayground {
     public static void main(String[] args) {
         ChatModerationService service = new DefaultChatModerationService(
                 ValidationResources.loadKeywordsByReason(),
-                ValidationResources.loadKeywordExceptions()
+                ValidationResources.loadKeywordExceptions(),
+                ValidationResources.loadAliasesByReason()
         );
 
         System.out.println("Moderation Playground (Ctrl-D to exit)");

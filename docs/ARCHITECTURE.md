@@ -91,6 +91,14 @@ PROFANITY와 SEXUAL_CONTENT keyword 및 false-positive exception은 하나의
 Aho-Corasick automaton으로 구축한다. Match된 normalized token을 category metadata로
 변환하며, exception은 명시적으로 연결된 keyword의 range를 덮는 match만 무효화한다.
 
+Keyword 탐지는 normalized baseline view와 선택적인 separator-collapsed view를 사용한다.
+두 번째 view는 사전 keyword의 인접 한글 음절 사이에서만 공백, ASCII 숫자,
+`.`, `-`, `_`, `*`를 제거한다. 실제 변환이 있을 때만 같은 automaton을 한 번 더
+검색한다. Detection view와 그 index는 reason-only 판정에만 사용하며 canonical
+output이나 개인정보 MASK range에는 사용하지 않는다.
+
+초성 및 임의 삽입 문자 변형은 fuzzy matching 대신 명시적인 alias로 등록한다.
+
 ## 4. Spring Integration
 
 최종 Spring 프로젝트에서는 Core 외부에 Adapter를 둔다.

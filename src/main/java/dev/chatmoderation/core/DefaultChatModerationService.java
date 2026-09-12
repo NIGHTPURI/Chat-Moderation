@@ -27,6 +27,7 @@ public final class DefaultChatModerationService implements ChatModerationService
     private final KeywordMatcher keywordMatcher;
     private final Map<String, List<ModerationReason>> reasonsByKeyword;
     private final Map<String, Set<String>> invalidatedKeywordsByException;
+    private final Set<String> collapsibleKeywordPairs;
     private final RuleFilter ruleFilter;
     private final ModerationPolicy policy;
 
@@ -47,6 +48,22 @@ public final class DefaultChatModerationService implements ChatModerationService
                 new DefaultMessageNormalizer(),
                 keywordsByReason,
                 exceptionsByKeyword,
+                Map.of(),
+                new DefaultRuleFilter(),
+                new DefaultModerationPolicy()
+        );
+    }
+
+    public DefaultChatModerationService(
+            Map<ModerationReason, ? extends Collection<String>> keywordsByReason,
+            Map<String, ? extends Collection<String>> exceptionsByKeyword,
+            Map<ModerationReason, ? extends Collection<String>> aliasesByReason
+    ) {
+        this(
+                new DefaultMessageNormalizer(),
+                keywordsByReason,
+                exceptionsByKeyword,
+                aliasesByReason,
                 new DefaultRuleFilter(),
                 new DefaultModerationPolicy()
         );
@@ -62,6 +79,7 @@ public final class DefaultChatModerationService implements ChatModerationService
                 normalizer,
                 Map.of(ModerationReason.PROFANITY, keywords),
                 Map.of(),
+                Map.of(),
                 ruleFilter,
                 policy
         );
@@ -74,17 +92,37 @@ public final class DefaultChatModerationService implements ChatModerationService
             RuleFilter ruleFilter,
             ModerationPolicy policy
     ) {
+        this(
+                normalizer,
+                keywordsByReason,
+                exceptionsByKeyword,
+                Map.of(),
+                ruleFilter,
+                policy
+        );
+    }
+
+    public DefaultChatModerationService(
+            MessageNormalizer normalizer,
+            Map<ModerationReason, ? extends Collection<String>> keywordsByReason,
+            Map<String, ? extends Collection<String>> exceptionsByKeyword,
+            Map<ModerationReason, ? extends Collection<String>> aliasesByReason,
+            RuleFilter ruleFilter,
+            ModerationPolicy policy
+    ) {
         this.normalizer = Objects.requireNonNull(normalizer, "normalizer must not be null");
         this.ruleFilter = Objects.requireNonNull(ruleFilter, "ruleFilter must not be null");
         this.policy = Objects.requireNonNull(policy, "policy must not be null");
         KeywordConfiguration configuration = createKeywordConfiguration(
                 keywordsByReason,
                 exceptionsByKeyword,
+                aliasesByReason,
                 normalizer
         );
         this.keywordMatcher = configuration.matcher();
         this.reasonsByKeyword = configuration.reasonsByKeyword();
         this.invalidatedKeywordsByException = configuration.invalidatedKeywordsByException();
+        this.collapsibleKeywordPairs = configuration.collapsibleKeywordPairs();
     }
 
     @Override
@@ -93,7 +131,20 @@ public final class DefaultChatModerationService implements ChatModerationService
 
         String canonicalMessage = message.strip();
         String normalizedMessage = normalizer.normalize(canonicalMessage);
-        List<KeywordMatch> keywordMatches = keywordMatcher.findAll(normalizedMessage);
+        Set<ModerationReason> keywordFindings = new LinkedHashSet<>(
+                findKeywordReasons(normalizedMessage)
+        );
+        String separatorCollapsedView = createSeparatorCollapsedView(normalizedMessage);
+        if (!separatorCollapsedView.equals(normalizedMessage)) {
+            keywordFindings.addAll(findKeywordReasons(separatorCollapsedView));
+        }
+        List<RuleMatch> originalMatches = ruleFilter.findAll(canonicalMessage);
+
+        return policy.decide(canonicalMessage, List.copyOf(keywordFindings), originalMatches);
+    }
+
+    private List<ModerationReason> findKeywordReasons(String detectionView) {
+        List<KeywordMatch> keywordMatches = keywordMatcher.findAll(detectionView);
         List<KeywordMatch> exceptionMatches = keywordMatches.stream()
                 .filter(match -> invalidatedKeywordsByException.containsKey(match.keyword()))
                 .toList();
@@ -104,41 +155,43 @@ public final class DefaultChatModerationService implements ChatModerationService
                 keywordFindings.addAll(reasons);
             }
         }
-        List<RuleMatch> originalMatches = ruleFilter.findAll(canonicalMessage);
-
-        return policy.decide(canonicalMessage, List.copyOf(keywordFindings), originalMatches);
+        return List.copyOf(keywordFindings);
     }
 
     private static KeywordConfiguration createKeywordConfiguration(
             Map<ModerationReason, ? extends Collection<String>> keywordsByReason,
             Map<String, ? extends Collection<String>> exceptionsByKeyword,
+            Map<ModerationReason, ? extends Collection<String>> aliasesByReason,
             MessageNormalizer normalizer
     ) {
         Objects.requireNonNull(keywordsByReason, "keywordsByReason must not be null");
         Objects.requireNonNull(exceptionsByKeyword, "exceptionsByKeyword must not be null");
+        Objects.requireNonNull(aliasesByReason, "aliasesByReason must not be null");
 
-        Map<ModerationReason, Collection<String>> checkedKeywords = new EnumMap<>(
-                ModerationReason.class
+        Map<ModerationReason, Collection<String>> checkedKeywords = checkCategories(
+                keywordsByReason,
+                "keywords"
         );
-        keywordsByReason.forEach((reason, keywords) -> checkedKeywords.put(
-                Objects.requireNonNull(reason, "keyword reason must not be null"),
-                Objects.requireNonNull(keywords, "keywords must not be null")
-        ));
-
+        Map<ModerationReason, Collection<String>> checkedAliases = checkCategories(
+                aliasesByReason,
+                "aliases"
+        );
         Map<String, LinkedHashSet<ModerationReason>> mutableReasons = new LinkedHashMap<>();
-        for (ModerationReason reason : ModerationReason.values()) {
-            Collection<String> keywords = checkedKeywords.get(reason);
-            if (keywords == null) {
-                continue;
-            }
-            for (String keyword : keywords) {
-                String normalizedKeyword = normalizeDictionaryEntry(keyword, normalizer, "keyword");
-                mutableReasons.computeIfAbsent(
-                        normalizedKeyword,
-                        ignored -> new LinkedHashSet<>()
-                ).add(reason);
-            }
-        }
+        Set<String> collapsibleKeywordPairs = new LinkedHashSet<>();
+        addCategorizedPatterns(
+                checkedKeywords,
+                normalizer,
+                "keyword",
+                mutableReasons,
+                collapsibleKeywordPairs
+        );
+        addCategorizedPatterns(
+                checkedAliases,
+                normalizer,
+                "alias",
+                mutableReasons,
+                null
+        );
 
         Map<String, List<ModerationReason>> reasonsByKeyword = new LinkedHashMap<>();
         mutableReasons.forEach((keyword, reasons) -> reasonsByKeyword.put(
@@ -183,8 +236,61 @@ public final class DefaultChatModerationService implements ChatModerationService
         return new KeywordConfiguration(
                 new AhoCorasickKeywordMatcher(allPatterns),
                 Map.copyOf(reasonsByKeyword),
-                Map.copyOf(invalidatedKeywordsByException)
+                Map.copyOf(invalidatedKeywordsByException),
+                Set.copyOf(collapsibleKeywordPairs)
         );
+    }
+
+    private static Map<ModerationReason, Collection<String>> checkCategories(
+            Map<ModerationReason, ? extends Collection<String>> categorizedPatterns,
+            String patternName
+    ) {
+        Map<ModerationReason, Collection<String>> checked = new EnumMap<>(
+                ModerationReason.class
+        );
+        categorizedPatterns.forEach((reason, patterns) -> checked.put(
+                Objects.requireNonNull(reason, patternName + " reason must not be null"),
+                Objects.requireNonNull(patterns, patternName + " must not be null")
+        ));
+        return checked;
+    }
+
+    private static void addCategorizedPatterns(
+            Map<ModerationReason, Collection<String>> categorizedPatterns,
+            MessageNormalizer normalizer,
+            String patternName,
+            Map<String, LinkedHashSet<ModerationReason>> reasonsByPattern,
+            Set<String> collapsiblePairs
+    ) {
+        for (ModerationReason reason : ModerationReason.values()) {
+            Collection<String> patterns = categorizedPatterns.get(reason);
+            if (patterns == null) {
+                continue;
+            }
+            for (String pattern : patterns) {
+                String normalizedPattern = normalizeDictionaryEntry(
+                        pattern,
+                        normalizer,
+                        patternName
+                );
+                reasonsByPattern.computeIfAbsent(
+                        normalizedPattern,
+                        ignored -> new LinkedHashSet<>()
+                ).add(reason);
+                if (collapsiblePairs != null) {
+                    addCollapsiblePairs(normalizedPattern, collapsiblePairs);
+                }
+            }
+        }
+    }
+
+    private static void addCollapsiblePairs(String keyword, Set<String> collapsiblePairs) {
+        int[] codePoints = keyword.codePoints().toArray();
+        for (int index = 1; index < codePoints.length; index++) {
+            if (isHangulSyllable(codePoints[index - 1]) && isHangulSyllable(codePoints[index])) {
+                collapsiblePairs.add(codePointPair(codePoints[index - 1], codePoints[index]));
+            }
+        }
     }
 
     private static String normalizeDictionaryEntry(
@@ -216,10 +322,61 @@ public final class DefaultChatModerationService implements ChatModerationService
         return false;
     }
 
+    private String createSeparatorCollapsedView(String normalizedMessage) {
+        StringBuilder view = new StringBuilder(normalizedMessage.length());
+        int index = 0;
+        while (index < normalizedMessage.length()) {
+            int codePoint = normalizedMessage.codePointAt(index);
+            if (!isSupportedSeparator(codePoint)) {
+                view.appendCodePoint(codePoint);
+                index += Character.charCount(codePoint);
+                continue;
+            }
+
+            int separatorStart = index;
+            while (index < normalizedMessage.length()) {
+                int separator = normalizedMessage.codePointAt(index);
+                if (!isSupportedSeparator(separator)) {
+                    break;
+                }
+                index += Character.charCount(separator);
+            }
+            int left = view.isEmpty() ? -1 : view.codePointBefore(view.length());
+            int right = index < normalizedMessage.length()
+                    ? normalizedMessage.codePointAt(index)
+                    : -1;
+            if (!collapsibleKeywordPairs.contains(codePointPair(left, right))) {
+                view.append(normalizedMessage, separatorStart, index);
+            }
+        }
+        return view.toString();
+    }
+
+    private static boolean isSupportedSeparator(int codePoint) {
+        return Character.isWhitespace(codePoint)
+                || codePoint >= '0' && codePoint <= '9'
+                || codePoint == '.'
+                || codePoint == '-'
+                || codePoint == '_'
+                || codePoint == '*';
+    }
+
+    private static boolean isHangulSyllable(int codePoint) {
+        return codePoint >= 0xAC00 && codePoint <= 0xD7A3;
+    }
+
+    private static String codePointPair(int left, int right) {
+        if (left < 0 || right < 0) {
+            return "";
+        }
+        return new String(new int[]{left, right}, 0, 2);
+    }
+
     private record KeywordConfiguration(
             KeywordMatcher matcher,
             Map<String, List<ModerationReason>> reasonsByKeyword,
-            Map<String, Set<String>> invalidatedKeywordsByException
+            Map<String, Set<String>> invalidatedKeywordsByException,
+            Set<String> collapsibleKeywordPairs
     ) {
     }
 }

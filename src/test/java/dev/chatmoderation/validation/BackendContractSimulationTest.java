@@ -14,7 +14,8 @@ import static org.junit.jupiter.api.Assertions.assertTrue;
 class BackendContractSimulationTest {
     private final ChatModerationService service = new DefaultChatModerationService(
             ValidationResources.loadKeywordsByReason(),
-            ValidationResources.loadKeywordExceptions()
+            ValidationResources.loadKeywordExceptions(),
+            ValidationResources.loadAliasesByReason()
     );
 
     @Test
