@@ -57,17 +57,20 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-아직 Aho-Corasick 구현은 없습니다.
+Phase 1이 완료되어 다음 순수 Java Core 구현을 포함합니다.
 
-현재 포함된 코드는 **도메인 계약(interface/model)만 정의한 baseline**입니다.
-Codex가 Phase 1부터 구현하도록 설계되어 있습니다.
+- Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
+- 한 번 구축한 automaton을 재사용하는 Aho-Corasick Keyword Matcher
+- 중복·중첩·한글 패턴을 포함한 JUnit 5 테스트
+
+Rule Filter와 Policy 조합은 이후 Phase에서 구현합니다.
 
 ## 로컬 테스트
 
-Gradle이 설치되어 있다면:
+프로젝트에 포함된 Gradle Wrapper로 실행합니다.
 
 ```bash
-gradle test
+./gradlew test
 ```
 
 IntelliJ에서는 Gradle 프로젝트로 열어 JDK 21을 지정하면 됩니다.
