@@ -75,6 +75,15 @@ Phase 3가 완료되어 다음 순수 Java Core 구현을 포함합니다.
 ./gradlew test
 ```
 
+수동 playground와 개발용 benchmark는 다음처럼 실행합니다.
+
+```bash
+./gradlew moderationPlayground
+./gradlew moderationBenchmark
+```
+
+Corpus 형식과 검증 항목은 [Local Validation](docs/LOCAL_VALIDATION.md)에 정리되어 있습니다.
+
 IntelliJ에서는 Gradle 프로젝트로 열어 JDK 21을 지정하면 됩니다.
 
 ## 최종 목표

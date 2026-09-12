@@ -24,6 +24,23 @@ tasks.named('test') {
     useJUnitPlatform()
 }
 
+tasks.register('moderationPlayground', JavaExec) {
+    group = 'verification'
+    description = 'Runs the interactive local moderation playground.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.ModerationPlayground'
+    standardInput = System.in
+    dependsOn testClasses
+}
+
+tasks.register('moderationBenchmark', JavaExec) {
+    group = 'verification'
+    description = 'Runs the non-gating local moderation benchmark.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.ModerationBenchmark'
+    dependsOn testClasses
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

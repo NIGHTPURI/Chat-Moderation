@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3 — ChatModerationService 완료
+Phase 3.5 — Local Validation Harness 완료
 
 ## 완료된 것
 
@@ -24,6 +24,10 @@ Phase 3 — ChatModerationService 완료
 - keyword 목록 사전 normalization 및 automaton 재사용
 - normalized keyword reason-only finding과 canonical RuleMatch range 분리
 - ALLOW/MASK/BLOCK 전체 흐름 integration test
+- 210건의 명시적 corpus와 parameterized test
+- 수동 Moderation Playground
+- 비게이팅 System.nanoTime benchmark runner
+- YoungManRest_BE persistence 계약 simulation test
 
 ## 아직 구현하지 않은 것
 
