@@ -1,0 +1,109 @@
+# category<TAB>message<TAB>expectedAction<TAB>expectedReason
+CONTEXTUAL_PROFANITY	너는 정말 쓸모없는 사람이라고 생각해	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	그 정도도 못 하다니 너무 한심하다	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	팀에서 가장 무능한 사람은 너야	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	네 머리에 든 게 있기는 하니	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	그런 짓을 하고도 인간도 아니지	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	내 눈앞에서 그냥 사라져 버려	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	말 섞기 싫으니까 당장 꺼져	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	아무것도 모르면서 좀 닥쳐	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	네 존재 자체가 민폐다	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	어떻게 매번 일을 그렇게 망치니	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	사람 구실도 못 하는구나	BLOCK	PROFANITY
+CONTEXTUAL_PROFANITY	네 말은 들을 가치조차 없어	BLOCK	PROFANITY
+CONTEXTUAL_SEXUAL	모르는 사람에게 몸 사진을 보내라고 했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	계속 벗은 사진을 요구해서 불쾌했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	채팅으로 야한 사진을 보내 달라고 한다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	오늘 밤 나랑 같이 자자고 집요하게 말했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	처음 본 사람에게 하룻밤을 제안했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	둘이 뜨겁게 놀자는 메시지가 왔다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	대화하자며 자꾸 호텔로 오라고 한다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	익명 채팅에서 성적인 만남을 요구했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	은밀한 사진을 교환하자는 제안을 받았다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	상대의 몸을 만져 보고 싶다고 말했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	옷을 모두 벗어 달라고 요구했다	BLOCK	SEXUAL_CONTENT
+CONTEXTUAL_SEXUAL	밤에 둘만의 비밀 놀이를 하자고 유도했다	BLOCK	SEXUAL_CONTENT
+IMPLICIT_INSULT	너 같은 사람은 어디에도 쓸모없어	BLOCK	PROFANITY
+IMPLICIT_INSULT	또 실패했네 정말 한심하기 짝이 없다	BLOCK	PROFANITY
+IMPLICIT_INSULT	그 실력으로 지원하다니 무능하구나	BLOCK	PROFANITY
+IMPLICIT_INSULT	생각이라는 걸 할 머리가 없는 것 같아	BLOCK	PROFANITY
+IMPLICIT_INSULT	대화할 가치도 없으니 사라져	BLOCK	PROFANITY
+IMPLICIT_INSULT	아는 척 그만하고 조용히 꺼져	BLOCK	PROFANITY
+IMPLICIT_INSULT	누가 물어봤냐 입 닥쳐	BLOCK	PROFANITY
+IMPLICIT_INSULT	너는 인간도 아닌 것처럼 행동한다	BLOCK	PROFANITY
+IMPLICIT_INSULT	매번 남에게 피해만 주는 존재네	BLOCK	PROFANITY
+IMPLICIT_INSULT	그 수준으로는 평생 아무것도 못 해	BLOCK	PROFANITY
+IMPLICIT_INSULT	너한테 맡긴 내가 잘못이었다	BLOCK	PROFANITY
+IMPLICIT_INSULT	모두가 너 때문에 고생하고 있어	BLOCK	PROFANITY
+FAMILY_INSULT	너희 부모도 너처럼 예의가 없겠지	BLOCK	PROFANITY
+FAMILY_INSULT	그런 태도는 엄마도 똑같을 것 같다	BLOCK	PROFANITY
+FAMILY_INSULT	네 아빠도 그렇게 행동하라고 가르쳤니	BLOCK	PROFANITY
+FAMILY_INSULT	가족도 너를 포기했을 것 같아	BLOCK	PROFANITY
+FAMILY_INSULT	부모 얼굴에 먹칠하는 행동이네	BLOCK	PROFANITY
+FAMILY_INSULT	네 엄마한테나 가서 떼를 써라	BLOCK	PROFANITY
+FAMILY_INSULT	아빠 이름까지 욕먹게 하지 마라	BLOCK	PROFANITY
+FAMILY_INSULT	가족 전체가 다 똑같은 수준이구나	BLOCK	PROFANITY
+FAMILY_INSULT	부모도 널 감당하기 힘들었겠다	BLOCK	PROFANITY
+FAMILY_INSULT	엄마도 네 말을 듣기 싫어할 거야	BLOCK	PROFANITY
+FAMILY_INSULT	아빠도 너를 부끄러워할 것 같다	BLOCK	PROFANITY
+FAMILY_INSULT	네 가족에게도 민폐일 것 같네	BLOCK	PROFANITY
+BENIGN_HOMONYM	회의 때문에 영화를 보지 못했어요	ALLOW	-
+BENIGN_HOMONYM	어젯밤에는 걱정이 많아서 자지 못했다	ALLOW	-
+BENIGN_HOMONYM	그 자료를 아직 보지 않았습니다	ALLOW	-
+BENIGN_HOMONYM	아이는 낮잠을 자지 않으려고 했다	ALLOW	-
+BENIGN_HOMONYM	웹 애널리틱스 지표를 다시 확인했다	ALLOW	-
+BENIGN_HOMONYM	제품 애널리틱스 도구를 도입할 예정이다	ALLOW	-
+BENIGN_HOMONYM	병신년은 육십갑자의 한 해를 뜻한다	ALLOW	-
+BENIGN_HOMONYM	후장식 공법의 구조적 특징을 조사했다	ALLOW	-
+BENIGN_HOMONYM	시발점이라는 단어의 사전 뜻을 찾았다	ALLOW	-
+BENIGN_HOMONYM	잠을 충분히 자지 않으면 피곤해진다	ALLOW	-
+BENIGN_HOMONYM	끝까지 보지 않고 결론 내리지 마세요	ALLOW	-
+BENIGN_HOMONYM	애널리틱스 보고서를 팀에 공유했다	ALLOW	-
+PROPER_NOUN	야동초등학교의 개교 연도를 조사했다	ALLOW	-
+PROPER_NOUN	야동리 마을회관에서 행사가 열린다	ALLOW	-
+PROPER_NOUN	병신년 기록이 조선왕조실록에 남아 있다	ALLOW	-
+PROPER_NOUN	후장식이라는 성을 가진 연구자를 찾았다	ALLOW	-
+PROPER_NOUN	야동리 버스 정류장의 시간표를 알려 줘	ALLOW	-
+PROPER_NOUN	야동초등학교 동문회 소식을 읽었다	ALLOW	-
+PROPER_NOUN	병신년에 제작된 문화재를 전시한다	ALLOW	-
+PROPER_NOUN	후장식 교수의 논문을 인용했다	ALLOW	-
+PROPER_NOUN	애널리틱스 코리아라는 행사에 참석했다	ALLOW	-
+PROPER_NOUN	보지산 등산로 이름의 유래를 조사했다	ALLOW	-
+PROPER_NOUN	자지산 지명 자료가 있는지 확인했다	ALLOW	-
+PROPER_NOUN	야동리 주민센터로 우편물을 보냈다	ALLOW	-
+TECHNICAL_TERM	후장식 구조는 부품을 뒤에서 조립한다	ALLOW	-
+TECHNICAL_TERM	애널리틱스 이벤트 스키마를 설계했다	ALLOW	-
+TECHNICAL_TERM	보지 못한 예외를 로그에서 재현했다	ALLOW	-
+TECHNICAL_TERM	스레드가 자지 않고 계속 실행 중이다	ALLOW	-
+TECHNICAL_TERM	병신년 간지 계산 함수를 테스트했다	ALLOW	-
+TECHNICAL_TERM	문자열 시발점을 기준으로 구간을 나눴다	ALLOW	-
+TECHNICAL_TERM	Google Analytics 태그를 배포했다	ALLOW	-
+TECHNICAL_TERM	후장식 커넥터의 체결 강도를 측정했다	ALLOW	-
+TECHNICAL_TERM	데이터를 보지 않고 캐시만 조회했다	ALLOW	-
+TECHNICAL_TERM	작업 스레드가 오래 자지 않도록 설정했다	ALLOW	-
+TECHNICAL_TERM	애널리틱스 SDK 버전을 올렸다	ALLOW	-
+TECHNICAL_TERM	야동리 주소를 지오코딩 테스트에 썼다	ALLOW	-
+ADVERTISEMENT_INTENT	수익 보장 투자방에 지금 참여하세요	BLOCK	SPAM
+ADVERTISEMENT_INTENT	무료 쿠폰을 받으려면 바로 가입하세요	BLOCK	SPAM
+ADVERTISEMENT_INTENT	선착순 열 명에게 상품을 드립니다	BLOCK	SPAM
+ADVERTISEMENT_INTENT	가입하면 현금 혜택을 즉시 지급합니다	BLOCK	SPAM
+ADVERTISEMENT_INTENT	무심사 대출 상담을 지금 신청하세요	BLOCK	SPAM
+ADVERTISEMENT_INTENT	코인 급등 정보를 유료로 공유합니다	BLOCK	SPAM
+ADVERTISEMENT_INTENT	추천인 코드를 입력하면 포인트를 줍니다	BLOCK	SPAM
+ADVERTISEMENT_INTENT	한정 상품을 오늘 바로 구매하세요	BLOCK	SPAM
+ADVERTISEMENT_INTENT	수익 보장이라는 광고 문구는 믿기 어렵다	ALLOW	-
+ADVERTISEMENT_INTENT	무료 쿠폰 정책을 회의에서 검토했다	ALLOW	-
+ADVERTISEMENT_INTENT	대출 광고의 문제점을 기사로 다뤘다	ALLOW	-
+ADVERTISEMENT_INTENT	코인 홍보 메시지를 차단하는 기능을 개발했다	ALLOW	-
+NEW_SLANG	너 같은 급식충과는 대화하기 싫다	BLOCK	PROFANITY
+NEW_SLANG	저 사람은 완전 틀딱이라며 조롱했다	BLOCK	PROFANITY
+NEW_SLANG	의견을 냈다는 이유로 맘충이라고 불렀다	BLOCK	PROFANITY
+NEW_SLANG	상대를 한남이라고 몰아붙였다	BLOCK	PROFANITY
+NEW_SLANG	상대를 한녀라고 낮춰 불렀다	BLOCK	PROFANITY
+NEW_SLANG	관심받으려고 그러는 관종이네	BLOCK	PROFANITY
+NEW_SLANG	아무리 설명해도 너는 정말 노답이다	BLOCK	PROFANITY
+NEW_SLANG	상대를 비하하며 꼰대라고 불렀다	BLOCK	PROFANITY
+NEW_SLANG	급식충이라는 표현의 유래를 조사했다	ALLOW	-
+NEW_SLANG	틀딱은 세대 비하 표현으로 분류된다	ALLOW	-
+NEW_SLANG	관종이라는 신조어를 보고서에 인용했다	ALLOW	-
+NEW_SLANG	노답이라는 단어를 필터 사전에 추가했다	ALLOW	-

@@ -57,7 +57,7 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-Phase 3.9까지 완료되어 다음 순수 Java Core 및 검증 환경을 포함합니다.
+Phase 3.10까지 완료되어 다음 순수 Java Core 및 검증 환경을 포함합니다.
 
 - Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
 - 한 번 구축한 automaton을 재사용하는 Aho-Corasick Keyword Matcher
@@ -74,6 +74,8 @@ Phase 3.9까지 완료되어 다음 순수 Java Core 및 검증 환경을 포함
 - 고정 dataset/조건의 개발용 benchmark baseline
 - calibration 320건과 독립 holdout 160건의 분리 평가
 - 제한된 `/`, shorthand/known alias, scheme-less URL calibration
+- production core와 분리된 semantic provider/routing 실험 harness
+- 108건 semantic 전용 dataset과 deterministic/semantic/hybrid 비교 runner
 
 ## 로컬 테스트
 
@@ -89,6 +91,7 @@ Phase 3.9까지 완료되어 다음 순수 Java Core 및 검증 환경을 포함
 ./gradlew moderationPlayground
 ./gradlew moderationEvaluation
 ./gradlew moderationBenchmark
+./gradlew semanticModerationEvaluation
 ```
 
 Corpus 형식과 검증 항목은 [Local Validation](docs/LOCAL_VALIDATION.md)에 정리되어 있습니다.

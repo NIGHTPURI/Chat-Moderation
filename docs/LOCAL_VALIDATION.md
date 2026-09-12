@@ -41,7 +41,7 @@ test는 corpus가 200건 이상이며 모든 category를 포함하는지 확인�
 사전에서 제외한다. 숫자/공백/제한된 구분자 삽입은 사전의 인접 한글 음절 쌍에
 한정해 detection view에서 제거한다. 범용 문자 삭제나 fuzzy matching은 사용하지 않는다.
 
-현재 지원하지 않는 `/`, `+`, `@` separator, 자모 변형, 유사문자, leetspeak,
+현재 지원하지 않는 `+`, `@` separator, 자모 변형, 유사문자, leetspeak,
 phonetic similarity는 corpus에서 허용 동작 또는 알려진 한계로 관리한다.
 
 ## Accuracy evaluation
@@ -59,6 +59,17 @@ category 정확도와 전체 오판 사례를 구분해 출력한다.
 
 실제 개인정보는 사용하지 않으며 모든 전화번호와 이메일은 평가용 가짜 값이다.
 Calibration 해석은 [Policy Calibration](POLICY_CALIBRATION.md)에 기록한다.
+
+## Semantic experiment
+
+```bash
+./gradlew semanticModerationEvaluation
+```
+
+`semantic-evaluation.tsv` 108건에 대해 deterministic-only, local heuristic-only,
+hybrid routing을 비교한다. 이 task는 분석용이며 JUnit pass/fail 기준이 아니다.
+현재 provider는 실제 AI가 아닌 재현 가능한 stand-in이다. 구조, 라우팅 기준, privacy,
+failure 정책과 결과 해석은 [Semantic Experiment](SEMANTIC_EXPERIMENT.md)에 기록한다.
 
 ## Benchmark
 

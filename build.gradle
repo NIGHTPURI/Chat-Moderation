@@ -49,6 +49,14 @@ tasks.register('moderationEvaluation', JavaExec) {
     dependsOn testClasses
 }
 
+tasks.register('semanticModerationEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Runs the local semantic moderation comparison experiment.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.SemanticModerationEvaluation'
+    dependsOn testClasses
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

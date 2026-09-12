@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.9 — Deterministic Policy Calibration 완료
+Phase 3.10 — Semantic Moderation Experiment 완료
 
 ## 완료된 것
 
@@ -42,17 +42,20 @@ Phase 3.9 — Deterministic Policy Calibration 완료
 - dictionary-aware `/` separator와 명시 shorthand/known variant alias
 - hostname 경계 및 제한 TLD 기반 scheme-less URL rule
 - 구현 고정 후 평가한 독립 holdout 160건
+- production core와 분리된 semantic provider abstraction 및 명시적 review router
+- 108건 semantic context dataset과 3-way 비교 evaluation runner
+- 개인정보 masking 선행 및 FAIL_OPEN/FAIL_CLOSED/DETERMINISTIC_FALLBACK 실험
 
 ## 아직 구현하지 않은 것
 
 - Spring 연동
 - Redis 연동
-- AI Moderation
+- 실제 AI provider 연동 및 frozen dataset 기반 비교
 - WebSocket 연동
 - Grafana metric
 
 ## 다음 작업
 
-Phase 4에서 YoungManRest_BE와 Core를 분리한 Spring Adapter를 설계한다.
-original ↔ normalized offset mapping, Redis, AI moderation은 각각의 이후 Phase까지
-추가하지 않는다.
+실제 AI를 검토한다면 Phase 3.10의 provider abstraction을 격리 구현으로 교체하고,
+동일 dataset에서 정확도/FPR/호출률/latency/비용을 먼저 측정한다. YoungManRest_BE,
+original ↔ normalized offset mapping, Redis와 Spring adapter는 별도 Phase로 유지한다.

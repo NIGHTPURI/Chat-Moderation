@@ -19,6 +19,8 @@ final class ValidationResources {
     private static final String CORPUS_RESOURCE = "/moderation/corpus.tsv";
     private static final String EVALUATION_RESOURCE = "/moderation/evaluation.tsv";
     private static final String HOLDOUT_RESOURCE = "/moderation/evaluation-holdout.tsv";
+    private static final String SEMANTIC_EVALUATION_RESOURCE =
+            "/moderation/semantic-evaluation.tsv";
     private static final String BENCHMARK_RESOURCE = "/moderation/benchmark-messages.txt";
     private static final String PROFANITY_RESOURCE = "/moderation/profanity-keywords.txt";
     private static final String SEXUAL_RESOURCE = "/moderation/sexual-keywords.txt";
@@ -103,6 +105,31 @@ final class ValidationResources {
 
     static List<EvaluationCase> loadEvaluationHoldout() {
         return loadEvaluation(HOLDOUT_RESOURCE);
+    }
+
+    static List<SemanticEvaluationCase> loadSemanticEvaluation() {
+        List<SemanticEvaluationCase> cases = new ArrayList<>();
+        List<String> lines = readLines(SEMANTIC_EVALUATION_RESOURCE);
+        for (int index = 0; index < lines.size(); index++) {
+            String line = lines.get(index);
+            if (line.isBlank() || line.startsWith("#")) {
+                continue;
+            }
+            String[] columns = line.split("\t", -1);
+            if (columns.length != 4) {
+                throw new IllegalArgumentException(
+                        SEMANTIC_EVALUATION_RESOURCE + ":" + (index + 1)
+                                + " must have 4 columns"
+                );
+            }
+            cases.add(new SemanticEvaluationCase(
+                    SemanticEvaluationCategory.valueOf(columns[0]),
+                    decode(columns[1]),
+                    ModerationAction.valueOf(columns[2]),
+                    parseReason(columns[3])
+            ));
+        }
+        return List.copyOf(cases);
     }
 
     private static List<EvaluationCase> loadEvaluation(String resourceName) {

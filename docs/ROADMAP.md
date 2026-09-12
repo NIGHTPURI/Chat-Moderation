@@ -118,6 +118,16 @@
 
 ---
 
+## Phase 3.10 — Semantic Moderation Experiment
+
+- production core와 분리된 provider abstraction 및 routing layer
+- `CLEAR_ALLOW`, `CLEAR_MASK`, `CLEAR_BLOCK`, `NEEDS_SEMANTIC_REVIEW`
+- 개인정보 masking 선행과 provider failure 정책 실험
+- 108건 semantic dataset에서 deterministic/semantic/hybrid 비교
+- credential 없는 local heuristic stand-in; 실제 AI 가치는 후속 실험에서 검증
+
+---
+
 ## Phase 4 — Spring Adapter
 
 별도 모듈 또는 패키지로 추가 고려.
