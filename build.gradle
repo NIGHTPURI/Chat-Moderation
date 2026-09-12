@@ -114,6 +114,30 @@ tasks.register('highRecallRouterLunaEvaluation', JavaExec) {
     dependsOn testClasses
 }
 
+tasks.register('confidenceGateCalibration', JavaExec) {
+    group = 'verification'
+    description = 'Evaluates the Phase 3.15 gate on calibration and production-like data only.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.ConfidenceGateCalibrationEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('confidenceGateEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Evaluates the frozen Phase 3.15 gate on its sealed holdout.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.ConfidenceGateHoldoutEvaluation'
+    dependsOn testClasses
+}
+
+tasks.register('finalLunaEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Runs the credential-gated final Luna 100% vs Phase 3.14/3.15 comparison.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.FinalLunaEvaluation'
+    dependsOn testClasses
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

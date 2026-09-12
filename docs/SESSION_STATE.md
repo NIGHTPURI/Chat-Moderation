@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.14 — High-Recall Semantic Router Redesign 완료, 성공 기준 미달
+Phase 3.16 — Final Luna Evaluation Harness 준비 완료, live 실행 대기
 
 ## 완료된 것
 
@@ -80,20 +80,33 @@ Phase 3.14 — High-Recall Semantic Router Redesign 완료, 성공 기준 미달
 - frozen router 대비 candidate recall +57.14 percentage point
 - historical Luna request cost 기반 월 1만~1000만 비용 projection
 - holdout 95% 기준 미달로 production 후보 미채택
+- production core와 분리된 confidence-aware semantic gate 4-state 계약
+- 독립 gate calibration 480건, sealed holdout 320건, production-like 500건
+- Phase 3.15 calibration candidate recall 91.43%, routing rate 51.46%
+- Phase 3.15 sealed candidate recall 95.71%, routing rate 55.63%, missed BLOCK 6
+- production-like candidate recall 90.00%, routing rate 29.80%
+- sealed deterministic false positive 24건 모두 semantic review 도달
+- gate 동결 후 sealed holdout 1회 평가 및 결과 확인 뒤 무수정
+- frozen Phase 3.10 / Phase 3.14 / Phase 3.15 semantic-oracle 비교 runner
+- historical `$0.00014119/request` 기반 production-like offline 비용 projection
+- frozen Phase 3.13 prompt/model/provider를 재사용하는 final Luna A/B/C harness
+- credential·가격 미설정 시 live task만 명확히 skip하는 실행 계약
+- 전체/category 지표, routing loss, latency, token, 실제 비용과 월 projection 출력 준비
 
 ## 아직 구현하지 않은 것
 
 - Spring 연동
 - Redis 연동
-- 새 router holdout의 optional 실제 Luna A/B/C 비교
+- Phase 3.15 sealed holdout의 final Luna A/B/C live 실행과 사람 검토
 - WebSocket 연동
 - Grafana metric
 
 ## 다음 작업
 
-현재 Phase 3.14 router는 sealed holdout candidate recall 95% 기준에 미달했으므로
-production에 연결하지 않는다. 실제 Luna A/B/C 확인이 필요하면 `OPENAI_API_KEY`를 process
-environment에만 설정하고 `./gradlew highRecallRouterLunaEvaluation`을 실행한다. Router와
-holdout은 더 이상 수정하지 않는다. 다음 router iteration은 새로운 Phase와 새로운
-calibration/holdout으로 시작해야 한다. YoungManRest_BE,
-original ↔ normalized offset mapping, Redis와 Spring adapter는 별도 Phase로 유지한다.
+Phase 3.15 gate는 sealed candidate recall 95.71%로 기준을 통과했지만 production에
+연결하지 않는다. 다음 작업은 사람이 `OPENAI_API_KEY`와 실행 시점 token 가격을 process
+environment에만 설정하고 `./gradlew finalLunaEvaluation`을 실행한 뒤 Luna 100%, Phase
+3.14 + Luna, Phase 3.15 + Luna 결과를 검토하는 것이다. Gate, calibration, sealed holdout은
+더 이상 수정하지 않는다. Live 결과 검토 전에는 final production JAR을 package/promote하지
+않는다. YoungManRest_BE, original ↔ normalized offset mapping, Redis와 Spring adapter는
+별도 Phase로 유지한다.

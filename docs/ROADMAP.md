@@ -233,6 +233,38 @@
 
 ---
 
+## Phase 3.15 — Confidence-Aware Semantic Gate
+
+- `CERTAIN_ALLOW` / `CERTAIN_BLOCK` / `CERTAIN_MASK` / `NEEDS_SEMANTIC_REVIEW`
+- deterministic BLOCK의 문맥 민감 false positive도 semantic review 허용
+- semantic-risk ALLOW의 직접·간접 모욕, 가족 모욕, 성적 요구·괴롭힘, 광고, 신조어 routing
+- 독립 calibration 480건, sealed holdout 320건, benign-heavy production-like 500건
+- frozen Phase 3.10 / Phase 3.14 / confidence-aware gate semantic-oracle 비교
+
+결과:
+- calibration candidate recall 91.43%, routing rate 51.46%
+- sealed candidate recall 95.71%, routing rate 55.63%, missed BLOCK 6
+- production-like candidate recall 90.00%, routing rate 29.80%
+- sealed deterministic false positive 24건 모두 semantic review 도달, local final 0
+- 95% 기준 통과; 결과 확인 후 gate와 sealed dataset 수정 없음
+- production 연결과 JAR 승격은 live Luna 및 사람 검토 전까지 보류
+
+---
+
+## Phase 3.16 — Final Luna Evaluation Harness Preparation
+
+- frozen Phase 3.13 Luna prompt/model/provider 재사용
+- Luna 100% / Phase 3.14 + Luna / Phase 3.15 + Luna 동일 prediction 비교
+- 전체·category 지표, routing loss, latency, token, 실제 비용 및 월 비용 출력
+- `OPENAI_API_KEY`와 실행 시점 가격이 없으면 live task만 명확히 skip
+
+현재 상태:
+- harness와 `finalLunaEvaluation` task 준비 완료
+- overnight run에서 live API 호출하지 않음
+- 사람의 credential 설정 및 live 결과 검토 대기
+
+---
+
 ## Phase 4 — Spring Adapter
 
 별도 모듈 또는 패키지로 추가 고려.

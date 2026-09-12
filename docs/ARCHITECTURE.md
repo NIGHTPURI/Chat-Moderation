@@ -162,3 +162,14 @@ Phase 3.14의 `HighRecallSemanticRouter`도 test experiment boundary 안에 있�
 Deterministic BLOCK/MASK를 local final로 보존하고 deterministic ALLOW 중 lexical/structural
 candidate만 선택한다. Sealed holdout 성공 기준을 통과하지 못했으므로 production 경로에는
 연결하지 않는다.
+
+Phase 3.15의 `ConfidenceAwareSemanticGate`도 같은 test experiment boundary에 있다.
+Public `ModerationResult`를 바꾸지 않고 `CERTAIN_ALLOW`, `CERTAIN_BLOCK`, `CERTAIN_MASK`,
+`NEEDS_SEMANTIC_REVIEW`를 내부적으로 구분한다. Deterministic BLOCK도 신고·인용·교육,
+고유명사, 전문 용어, benign homonym 문맥이면 semantic review 대상이 될 수 있다. Gate는
+semantic action을 결정하지 않으며 production 경로에 연결되지 않는다.
+
+Phase 3.16 `FinalLunaEvaluation`은 Phase 3.13 frozen prompt/model provider를 재사용한다.
+Phase 3.15 sealed holdout의 Luna 판정을 메시지당 한 번만 얻어 Luna 100%, Phase 3.14 +
+Luna, Phase 3.15 + Luna에 공유한다. Credential과 실행 시점 가격이 없으면 live task만
+skip하며 일반 build와 offline evaluation에는 영향을 주지 않는다.

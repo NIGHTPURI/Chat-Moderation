@@ -57,8 +57,9 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-Phase 3.14 high-recall router 실험까지 완료되었습니다. 새 router는 sealed holdout의
-95% candidate recall 기준에 미달해 production 후보로 채택하지 않았습니다.
+Phase 3.15 confidence-aware semantic gate와 Phase 3.16 final Luna evaluation harness
+준비까지 완료되었습니다. 새 gate는 독립 sealed holdout의 95% candidate recall 기준을
+통과했지만 live Luna 결과와 사람의 검토 전까지 production 후보로 승격하지 않습니다.
 다음 순수 Java Core 및 검증 환경을 포함합니다.
 
 - Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
@@ -86,6 +87,9 @@ Phase 3.14 high-recall router 실험까지 완료되었습니다. 새 router는 
 - GPT-5.6 Luna-only와 동일 판정 기반 frozen-router 손실 비교 runner
 - 336건 router calibration과 독립 sealed router holdout 224건
 - lexical/structural high-recall router 및 oracle/live 비교 runner
+- deterministic BLOCK의 문맥 민감도를 포함한 confidence-aware semantic gate
+- 독립 calibration 480건, sealed holdout 320건, production-like cost dataset 500건
+- Luna 100% / Phase 3.14 + Luna / Phase 3.15 + Luna 최종 live harness
 
 ## 로컬 테스트
 
@@ -109,11 +113,14 @@ Phase 3.14 high-recall router 실험까지 완료되었습니다. 새 router는 
 ./gradlew highRecallRouterCalibration
 ./gradlew highRecallRouterEvaluation
 ./gradlew highRecallRouterLunaEvaluation
+./gradlew confidenceGateCalibration
+./gradlew confidenceGateEvaluation
+./gradlew finalLunaEvaluation
 ```
 
 `realSemanticModerationEvaluation`, `openAiModerationEvaluation`,
 `moderationScoreCalibration`, `lunaBaselineEvaluation`,
-`highRecallRouterLunaEvaluation`만 `OPENAI_API_KEY`가 있을 때 실제 API를 호출합니다.
+`highRecallRouterLunaEvaluation`, `finalLunaEvaluation`만 `OPENAI_API_KEY`가 있을 때 실제 API를 호출합니다.
 나머지 router task는 offline입니다. Luna baseline은 가격 환경변수도 필요합니다. 설정은
 [Real Semantic Experiment](docs/REAL_SEMANTIC_EXPERIMENT.md)와
 [OpenAI Moderation API Experiment](docs/OPENAI_MODERATION_API_EXPERIMENT.md)에 정리되어
@@ -125,6 +132,9 @@ Luna baseline 계약과 비용 설정은
 [Luna Baseline Experiment](docs/LUNA_BASELINE_EXPERIMENT.md)을 참고하세요.
 Router 재설계 결과는
 [High-Recall Router Experiment](docs/HIGH_RECALL_ROUTER_EXPERIMENT.md)을 참고하세요.
+Confidence-aware gate 결과는
+[Confidence-Aware Gate Experiment](docs/CONFIDENCE_AWARE_GATE_EXPERIMENT.md), 최종 live 실행은
+[Final Luna Evaluation](docs/FINAL_LUNA_EVALUATION.md)을 참고하세요.
 
 Corpus 형식과 검증 항목은 [Local Validation](docs/LOCAL_VALIDATION.md)에 정리되어 있습니다.
 
