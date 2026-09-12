@@ -358,7 +358,8 @@ public final class DefaultChatModerationService implements ChatModerationService
                 || codePoint == '.'
                 || codePoint == '-'
                 || codePoint == '_'
-                || codePoint == '*';
+                || codePoint == '*'
+                || codePoint == '/';
     }
 
     private static boolean isHangulSyllable(int codePoint) {

@@ -41,6 +41,14 @@ tasks.register('moderationBenchmark', JavaExec) {
     dependsOn testClasses
 }
 
+tasks.register('moderationEvaluation', JavaExec) {
+    group = 'verification'
+    description = 'Evaluates moderation accuracy without gating regression tests.'
+    classpath = sourceSets.test.runtimeClasspath
+    mainClass = 'dev.chatmoderation.validation.ModerationEvaluation'
+    dependsOn testClasses
+}
+
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
 }

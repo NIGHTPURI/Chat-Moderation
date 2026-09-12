@@ -17,6 +17,9 @@ import java.util.Map;
 
 final class ValidationResources {
     private static final String CORPUS_RESOURCE = "/moderation/corpus.tsv";
+    private static final String EVALUATION_RESOURCE = "/moderation/evaluation.tsv";
+    private static final String HOLDOUT_RESOURCE = "/moderation/evaluation-holdout.tsv";
+    private static final String BENCHMARK_RESOURCE = "/moderation/benchmark-messages.txt";
     private static final String PROFANITY_RESOURCE = "/moderation/profanity-keywords.txt";
     private static final String SEXUAL_RESOURCE = "/moderation/sexual-keywords.txt";
     private static final String EXCEPTIONS_RESOURCE = "/moderation/keyword-exceptions.txt";
@@ -92,6 +95,43 @@ final class ValidationResources {
             ));
         }
         return List.copyOf(cases);
+    }
+
+    static List<EvaluationCase> loadEvaluation() {
+        return loadEvaluation(EVALUATION_RESOURCE);
+    }
+
+    static List<EvaluationCase> loadEvaluationHoldout() {
+        return loadEvaluation(HOLDOUT_RESOURCE);
+    }
+
+    private static List<EvaluationCase> loadEvaluation(String resourceName) {
+        List<EvaluationCase> cases = new ArrayList<>();
+        List<String> lines = readLines(resourceName);
+        for (int index = 0; index < lines.size(); index++) {
+            String line = lines.get(index);
+            if (line.isBlank() || line.startsWith("#")) {
+                continue;
+            }
+            String[] columns = line.split("\t", -1);
+            if (columns.length != 5) {
+                throw new IllegalArgumentException(
+                        resourceName + ":" + (index + 1) + " must have 5 columns"
+                );
+            }
+            cases.add(new EvaluationCase(
+                    EvaluationCategory.valueOf(columns[0]),
+                    decode(columns[1]),
+                    ModerationAction.valueOf(columns[2]),
+                    parseReason(columns[3]),
+                    EvaluationSupport.valueOf(columns[4])
+            ));
+        }
+        return List.copyOf(cases);
+    }
+
+    static List<String> loadBenchmarkMessages() {
+        return readDictionary(BENCHMARK_RESOURCE).stream().map(ValidationResources::decode).toList();
     }
 
     private static ModerationReason parseReason(String value) {

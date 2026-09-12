@@ -16,14 +16,14 @@ EDGE_CASE	ffffffff-ffff-4fff-afff-ffffffffffff	BLOCK	SPAM	<NULL>
 NORMAL	UUID 비슷한 값 abcdef12-3456-7890-abcd-ef1234567890	ALLOW	-	-
 NORMAL	user@example 은 완전한 이메일이 아닙니다	ALLOW	-	-
 NORMAL	user@localhost 로컬 표기입니다	ALLOW	-	-
-NORMAL	user.example.com에는 골뱅이가 없습니다	ALLOW	-	-
+URL	user.example.com에는 골뱅이가 없습니다	BLOCK	URL	<NULL>
 NORMAL	@example.com 앞부분이 없습니다	ALLOW	-	-
 NORMAL	user@.com 도 잘못된 주소입니다	ALLOW	-	-
 NORMAL	user@@example.com 도 잘못된 주소입니다	ALLOW	-	-
-NORMAL	http:/example.com 은 URL이 아닙니다	ALLOW	-	-
-NORMAL	https//example.com 콜론이 없습니다	ALLOW	-	-
-NORMAL	www.example.com 은 현재 규칙의 URL이 아닙니다	ALLOW	-	-
-NORMAL	example.com 을 문장으로 적었습니다	ALLOW	-	-
+URL	http:/example.com 도 domain은 탐지합니다	BLOCK	URL	<NULL>
+URL	https//example.com 도 domain은 탐지합니다	BLOCK	URL	<NULL>
+URL	www.example.com 으로 이동합니다	BLOCK	URL	<NULL>
+URL	example.com 을 공유했습니다	BLOCK	URL	<NULL>
 NORMAL	http://localhost 는 현재 탐지 대상이 아닙니다	ALLOW	-	-
 NORMAL	ㅋㅋ 재밌네요	ALLOW	-	-
 NORMAL	ㅋㅋㅋ 정말 웃겨요	ALLOW	-	-
@@ -58,7 +58,7 @@ PROFANITY	병신	BLOCK	PROFANITY	<NULL>
 PROFANITY	염병하네	BLOCK	PROFANITY	<NULL>
 PROFANITY	옘병	BLOCK	PROFANITY	<NULL>
 PROFANITY	존나	BLOCK	PROFANITY	<NULL>
-PROFANITY	개년	BLOCK	PROFANITY	<NULL>
+PROFANITY	이 개년아	BLOCK	PROFANITY	<NULL>
 PROFANITY	개새끼	BLOCK	PROFANITY	<NULL>
 PROFANITY	썅	BLOCK	PROFANITY	<NULL>
 PROFANITY	좆	BLOCK	PROFANITY	<NULL>
@@ -212,11 +212,11 @@ EDGE_CASE	0010-1234-56789	ALLOW	-	-
 EDGE_CASE	name@example.c	ALLOW	-	-
 EDGE_CASE	name@-example.com	ALLOW	-	-
 EDGE_CASE	name@example-.com	ALLOW	-	-
-EDGE_CASE	name example.com	ALLOW	-	-
+URL	name example.com	BLOCK	URL	<NULL>
 EDGE_CASE	http://example	ALLOW	-	-
 EDGE_CASE	https://localhost/path	ALLOW	-	-
-EDGE_CASE	ftp://example.com	ALLOW	-	-
-EDGE_CASE	HTTP example.com	ALLOW	-	-
+URL	ftp://example.com	BLOCK	URL	<NULL>
+URL	HTTP example.com	BLOCK	URL	<NULL>
 EDGE_CASE	ㅋㅋㅋㅋㅋㅋㅋ	ALLOW	-	-
 EDGE_CASE	ㅎㅎㅎㅎㅎㅎㅎ	ALLOW	-	-
 EDGE_CASE	aaaaaaa	ALLOW	-	-
@@ -262,6 +262,31 @@ OBFUSCATION	버전 1.2.3	ALLOW	-	버전 1.2.3
 OBFUSCATION	A-B 테스트	ALLOW	-	A-B 테스트
 OBFUSCATION	snake_case	ALLOW	-	snake_case
 OBFUSCATION	씨 1호 발언	ALLOW	-	씨 1호 발언
-OBFUSCATION	씨/발	ALLOW	-	씨/발
+OBFUSCATION	씨/발	BLOCK	PROFANITY	<NULL>
+NORMAL	3개년 계획	ALLOW	-	3개년 계획
+NORMAL	5개년 전망	ALLOW	-	5개년 전망
+NORMAL	몇 개년 동안 진행합니다	ALLOW	-	몇 개년 동안 진행합니다
+PROFANITY	개년아 그만해	BLOCK	PROFANITY	<NULL>
+PROFANITY	이개년 정말 너무하네	BLOCK	PROFANITY	<NULL>
+PROFANITY	저 개년이 또 왔다	BLOCK	PROFANITY	<NULL>
+PROFANITY	개년같은 말을 했다	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	포/르/노	BLOCK	SEXUAL_CONTENT	<NULL>
+OBFUSCATION	ㅅ ㅂ	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	ㅆ.ㅂ	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	ㅈ-ㄴ	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	씨바	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	시팔	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	지럴	BLOCK	PROFANITY	<NULL>
+OBFUSCATION	븅신	BLOCK	PROFANITY	<NULL>
+NORMAL	시바 신화를 공부한다	ALLOW	-	시바 신화를 공부한다
+NORMAL	시바견을 산책시킨다	ALLOW	-	시바견을 산책시킨다
+NORMAL	A/B 테스트를 진행한다	ALLOW	-	A/B 테스트를 진행한다
+NORMAL	2026/09/12 일정입니다	ALLOW	-	2026/09/12 일정입니다
+NORMAL	input/output 형식을 확인한다	ALLOW	-	input/output 형식을 확인한다
+NORMAL	path/to/file 문서 표기	ALLOW	-	path/to/file 문서 표기
+URL	visit example.com now	BLOCK	URL	<NULL>
+URL	www.example.com	BLOCK	URL	<NULL>
+NORMAL	version 1.2.3	ALLOW	-	version 1.2.3
+NORMAL	foo.bar가 일반 문자열인 경우	ALLOW	-	foo.bar가 일반 문자열인 경우
 OBFUSCATION	씨+발	ALLOW	-	씨+발
 OBFUSCATION	씨@발	ALLOW	-	씨@발

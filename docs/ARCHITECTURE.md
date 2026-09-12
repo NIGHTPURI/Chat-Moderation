@@ -93,11 +93,15 @@ Aho-Corasick automaton으로 구축한다. Match된 normalized token을 category
 
 Keyword 탐지는 normalized baseline view와 선택적인 separator-collapsed view를 사용한다.
 두 번째 view는 사전 keyword의 인접 한글 음절 사이에서만 공백, ASCII 숫자,
-`.`, `-`, `_`, `*`를 제거한다. 실제 변환이 있을 때만 같은 automaton을 한 번 더
+`.`, `-`, `_`, `*`, `/`를 제거한다. 실제 변환이 있을 때만 같은 automaton을 한 번 더
 검색한다. Detection view와 그 index는 reason-only 판정에만 사용하며 canonical
 output이나 개인정보 MASK range에는 사용하지 않는다.
 
 초성 및 임의 삽입 문자 변형은 fuzzy matching 대신 명시적인 alias로 등록한다.
+
+Scheme-less URL은 hostname 경계와 제한된 TLD 목록(`com`, `net`, `org`, `io`,
+`dev`, `ai`, `co.kr`)을 사용한다. 이메일의 `@domain`과 `localhost`, 버전 문자열,
+목록에 없는 `foo.bar` 형태는 URL match에서 제외한다.
 
 ## 4. Spring Integration
 

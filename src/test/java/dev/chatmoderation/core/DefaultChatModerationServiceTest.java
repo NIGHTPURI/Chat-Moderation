@@ -247,10 +247,18 @@ class DefaultChatModerationServiceTest {
     void detectsSupportedSeparatorsOnlyBetweenKeywordSyllables() {
         ChatModerationService service = obfuscationService();
 
-        for (String message : List.of("씨 발", "씨.발", "씨-발", "씨_발", "씨*발")) {
+        for (String message : List.of(
+                "씨 발",
+                "씨.발",
+                "씨-발",
+                "씨_발",
+                "씨*발",
+                "씨/발"
+        )) {
             assertBlockedFor(service.moderate(message), ModerationReason.PROFANITY);
         }
         assertBlockedFor(service.moderate("섹 스"), ModerationReason.SEXUAL_CONTENT);
+        assertBlockedFor(service.moderate("섹/스"), ModerationReason.SEXUAL_CONTENT);
     }
 
     @Test
@@ -259,6 +267,26 @@ class DefaultChatModerationServiceTest {
 
         for (String message : List.of("ㅅㅂ", "ㅆㅂ", "ㅈㄴ", "씨아발")) {
             assertBlockedFor(service.moderate(message), ModerationReason.PROFANITY);
+        }
+    }
+
+    @Test
+    void detectsCalibratedExplicitAliasesButAllowsWithheldShivaTerm() {
+        ChatModerationService service = calibratedAliasService();
+
+        for (String message : List.of("ㅅ ㅂ", "ㅆ.ㅂ", "ㅈ-ㄴ", "씨바", "시팔", "지럴", "븅신")) {
+            assertBlockedFor(service.moderate(message), ModerationReason.PROFANITY);
+        }
+        assertAllowed(service.moderate("시바 신화를 공부한다"), ModerationAction.ALLOW);
+        assertAllowed(service.moderate("시바견을 산책시킨다"), ModerationAction.ALLOW);
+    }
+
+    @Test
+    void slashCollapseDoesNotChangeUnrelatedTechnicalText() {
+        ChatModerationService service = obfuscationService();
+
+        for (String message : List.of("A/B 테스트", "2026/09/12", "input/output", "path/to/file")) {
+            assertAllowed(service.moderate(message), ModerationAction.ALLOW);
         }
     }
 
@@ -322,6 +350,17 @@ class DefaultChatModerationServiceTest {
                 Map.of(
                         ModerationReason.PROFANITY,
                         List.of("ㅅㅂ", "ㅆㅂ", "ㅈㄴ", "씨아발")
+                )
+        );
+    }
+
+    private ChatModerationService calibratedAliasService() {
+        return new DefaultChatModerationService(
+                Map.of(ModerationReason.PROFANITY, List.of("시발")),
+                Map.of("시발", List.of("시발점")),
+                Map.of(
+                        ModerationReason.PROFANITY,
+                        List.of("ㅅ ㅂ", "ㅆ.ㅂ", "ㅈ-ㄴ", "씨바", "시팔", "지럴", "븅신")
                 )
         );
     }

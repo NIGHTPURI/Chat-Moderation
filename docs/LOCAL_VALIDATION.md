@@ -44,16 +44,33 @@ test는 corpus가 200건 이상이며 모든 category를 포함하는지 확인�
 현재 지원하지 않는 `/`, `+`, `@` separator, 자모 변형, 유사문자, leetspeak,
 phonetic similarity는 corpus에서 허용 동작 또는 알려진 한계로 관리한다.
 
+## Accuracy evaluation
+
+```bash
+./gradlew moderationEvaluation
+```
+
+`evaluation.tsv`는 Phase 3.8 이후 calibration/dev dataset으로 사용한다.
+`evaluation-holdout.tsv`는 문장이 겹치지 않는 독립 합성 holdout 160건이며 Phase 3.9
+구현을 고정한 뒤 최종 평가에만 사용한다. 현재 미지원 기능과 ambiguous 문맥도 기대
+정책대로 라벨링하므로 오판이 있어도 task는 성공한다. Runner는 두 dataset 각각의
+TP/TN/FP/FN, precision/recall/F1, FPR/FNR, reason별 지표, action confusion matrix,
+category 정확도와 전체 오판 사례를 구분해 출력한다.
+
+실제 개인정보는 사용하지 않으며 모든 전화번호와 이메일은 평가용 가짜 값이다.
+Calibration 해석은 [Policy Calibration](POLICY_CALIBRATION.md)에 기록한다.
+
 ## Benchmark
 
 ```bash
 ./gradlew moderationBenchmark
-./gradlew moderationBenchmark --args='200'
 ```
 
-인자는 corpus 반복 횟수이며 기본값은 100이다. 5회 warmup 후 총 메시지 수,
-총 처리 시간, 평균 latency, p50, p95, p99를 출력한다. `System.nanoTime()` 기반의
-로컬 비교 도구이므로 JMH를 대체하지 않으며 CI 성공/실패 조건으로 사용하지 않는다.
+`benchmark-messages.txt`의 고정 메시지 50건을 사용한다. Warmup 20회와 측정 200회를
+고정하고 dataset 수, 총 측정 메시지 수, 총 처리 시간, 평균 latency, p50, p95,
+p99를 출력한다. `System.nanoTime()` 기반의 로컬 비교 도구이므로 JMH를 대체하지
+않으며 CI 성공/실패 조건으로 사용하지 않는다. 서로 다른 머신/JVM 실행은 직접
+비교하지 않는다.
 
 ## Backend contract simulation
 

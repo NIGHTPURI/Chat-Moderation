@@ -8,35 +8,33 @@ import java.util.List;
 import java.util.Locale;
 
 public final class ModerationBenchmark {
-    private static final int WARMUP_ROUNDS = 5;
-    private static final int DEFAULT_MEASURED_ROUNDS = 100;
+    private static final int WARMUP_ROUNDS = 20;
+    private static final int MEASURED_ITERATIONS = 200;
 
     private ModerationBenchmark() {
     }
 
     public static void main(String[] args) {
-        int measuredRounds = args.length == 0
-                ? DEFAULT_MEASURED_ROUNDS
-                : parsePositiveRounds(args[0]);
         ChatModerationService service = new DefaultChatModerationService(
                 ValidationResources.loadKeywordsByReason(),
                 ValidationResources.loadKeywordExceptions(),
                 ValidationResources.loadAliasesByReason()
         );
-        List<String> messages = ValidationResources.loadCorpus().stream()
-                .map(CorpusCase::message)
-                .toList();
+        List<String> messages = ValidationResources.loadBenchmarkMessages();
 
         runRounds(service, messages, WARMUP_ROUNDS, null);
 
-        long[] latencies = new long[messages.size() * measuredRounds];
+        long[] latencies = new long[messages.size() * MEASURED_ITERATIONS];
         long startedAt = System.nanoTime();
-        runRounds(service, messages, measuredRounds, latencies);
+        runRounds(service, messages, MEASURED_ITERATIONS, latencies);
         long totalNanos = System.nanoTime() - startedAt;
         Arrays.sort(latencies);
 
         System.out.println("Development benchmark; not a CI pass/fail criterion");
-        System.out.println("total messages: " + latencies.length);
+        System.out.println("dataset messages: " + messages.size());
+        System.out.println("warmup rounds: " + WARMUP_ROUNDS);
+        System.out.println("measured iterations: " + MEASURED_ITERATIONS);
+        System.out.println("measured messages: " + latencies.length);
         System.out.printf(Locale.ROOT, "total time: %.3f ms%n", nanosToMillis(totalNanos));
         System.out.printf(
                 Locale.ROOT,
@@ -80,11 +78,4 @@ public final class ModerationBenchmark {
         return nanos / 1_000.0;
     }
 
-    private static int parsePositiveRounds(String value) {
-        int rounds = Integer.parseInt(value);
-        if (rounds < 1) {
-            throw new IllegalArgumentException("measured rounds must be positive");
-        }
-        return rounds;
-    }
 }

@@ -99,6 +99,25 @@
 
 ---
 
+## Phase 3.8 — Accuracy Evaluation & Policy Calibration
+
+- regression corpus와 독립 evaluation dataset 분리
+- precision/recall/F1, FPR/FNR, reason별 지표
+- ALLOW/MASK/BLOCK confusion matrix와 오판 사례 출력
+- 고정 조건 benchmark 및 policy calibration baseline
+
+---
+
+## Phase 3.9 — Deterministic Policy Calibration
+
+- calibration/dev dataset과 독립 holdout 분리
+- `개년` false-positive 완화
+- dictionary-aware `/`와 명시 shorthand/known alias
+- 제한 TLD 기반 scheme-less URL
+- 고정 구현의 calibration/holdout 비교
+
+---
+
 ## Phase 4 — Spring Adapter
 
 별도 모듈 또는 패키지로 추가 고려.

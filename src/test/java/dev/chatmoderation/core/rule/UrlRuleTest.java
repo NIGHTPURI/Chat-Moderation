@@ -38,8 +38,35 @@ class UrlRuleTest {
     }
 
     @Test
-    void allowsDomainWithoutScheme() {
-        assertTrue(rule.findAll("example.com은 예시 도메인입니다").isEmpty());
+    void findsDomainWithoutScheme() {
+        assertEquals(
+                List.of(new RuleMatch(ModerationReason.URL, "example.com", 6, 17)),
+                rule.findAll("visit example.com now")
+        );
+    }
+
+    @Test
+    void findsWwwDomainWithoutScheme() {
+        assertEquals(
+                List.of(new RuleMatch(ModerationReason.URL, "www.example.com", 0, 15)),
+                rule.findAll("www.example.com으로 이동")
+        );
+    }
+
+    @Test
+    void doesNotMatchDomainInsideEmail() {
+        assertTrue(rule.findAll("user@example.com").isEmpty());
+    }
+
+    @Test
+    void allowsVersionAndUnlistedTopLevelDomain() {
+        assertTrue(rule.findAll("version 1.2.3").isEmpty());
+        assertTrue(rule.findAll("foo.bar가 일반 문자열인 경우").isEmpty());
+    }
+
+    @Test
+    void requiresHostnameBoundary() {
+        assertTrue(rule.findAll("접두사example.com은 일반 문자열입니다").isEmpty());
     }
 
     @Test

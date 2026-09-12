@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.7 — Obfuscation Detection 완료
+Phase 3.9 — Deterministic Policy Calibration 완료
 
 ## 완료된 것
 
@@ -34,6 +34,14 @@ Phase 3.7 — Obfuscation Detection 완료
 - normalized baseline과 dictionary-aware separator-collapse detection view
 - 숫자, 공백, `.`, `-`, `_`, `*` 삽입 탐지
 - 명시적 alias (`ㅅㅂ`, `ㅆㅂ`, `ㅈㄴ`, `씨아발`)
+- regression과 분리된 320건 evaluation dataset 및 분석 runner
+- action confusion matrix와 overall/reason/category accuracy 지표
+- 50건 고정 dataset, warmup 20회, 측정 200회 benchmark
+- policy calibration 및 deterministic/semantic 개선 후보 분류
+- unconditional `개년` 제거와 강한 phrase 사전
+- dictionary-aware `/` separator와 명시 shorthand/known variant alias
+- hostname 경계 및 제한 TLD 기반 scheme-less URL rule
+- 구현 고정 후 평가한 독립 holdout 160건
 
 ## 아직 구현하지 않은 것
 
