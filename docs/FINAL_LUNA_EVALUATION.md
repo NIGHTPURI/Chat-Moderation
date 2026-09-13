@@ -2,8 +2,18 @@
 
 ## 상태
 
-재현 가능한 live evaluation harness 준비가 완료됐다. 이번 overnight run에서는 task를
-호출하지 않았으며 OpenAI API 요청도 발생하지 않았다.
+재현 가능한 live evaluation이 완료됐다. Frozen Phase 3.15 sealed holdout과 gate는 결과를
+본 뒤 수정하지 않았다.
+
+| mode | accuracy | precision | recall | F1 | FPR | FNR | TP/TN/FP/FN |
+|---|---:|---:|---:|---:|---:|---:|---|
+| Luna 100% | 93.75% | 100% | 87.50% | 93.33% | 0% | 12.50% | 140/160/0/20 |
+| Phase 3.14 + Luna | 70.00% | 78.57% | 55.00% | 64.71% | 15.00% | 45.00% | 88/136/24/72 |
+| Phase 3.15 + Luna | 98.13% | 100% | 96.25% | 98.09% | 0% | 3.75% | 154/160/0/6 |
+
+관측 Luna latency는 평균 942 ms, p95 1306 ms, p99 1951 ms였고 평균 API 비용은
+`$0.00014198/request`였다. Phase 3.15 routing rate는 balanced sealed data에서 55.63%,
+production-like offline data에서 29.80%였다.
 
 Harness는 Phase 3.15 sealed holdout 320건을 사용한다. 각 메시지를 Luna에 한 번만 요청해
 동일 판정을 다음 세 mode에 재사용한다.

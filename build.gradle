@@ -3,9 +3,10 @@ plugins {
 }
 
 group = 'dev.chatmoderation'
-version = '0.1.0-SNAPSHOT'
+version = '0.2.0'
 
 java {
+    modularity.inferModulePath = true
     toolchain {
         languageVersion = JavaLanguageVersion.of(21)
     }
@@ -16,9 +17,19 @@ repositories {
 }
 
 dependencies {
+    implementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
     testImplementation platform('org.junit:junit-bom:5.11.4')
     testImplementation 'org.junit.jupiter:junit-jupiter'
-    testImplementation 'com.fasterxml.jackson.core:jackson-databind:2.19.2'
+}
+
+tasks.named('jar') {
+    includeEmptyDirs = false
+    manifest {
+        attributes(
+                'Implementation-Title': 'chat-moderation',
+                'Implementation-Version': project.version
+        )
+    }
 }
 
 tasks.named('test') {
@@ -136,6 +147,46 @@ tasks.register('finalLunaEvaluation', JavaExec) {
     classpath = sourceSets.test.runtimeClasspath
     mainClass = 'dev.chatmoderation.validation.FinalLunaEvaluation'
     dependsOn testClasses
+}
+
+tasks.register('verifyProductionJar') {
+    group = 'verification'
+    description = 'Checks that the production JAR contains required classes and no test assets.'
+    dependsOn tasks.named('jar')
+    doLast {
+        def jarFile = tasks.named('jar').get().archiveFile.get().asFile
+        def paths = zipTree(jarFile).matching { include '**/*' }.files.collect { file ->
+            file.path.replace('\\', '/')
+        }
+        def requiredSuffixes = [
+                'dev/chatmoderation/core/ChatModerationService.class',
+                'dev/chatmoderation/core/ChatModerationServices.class',
+                'dev/chatmoderation/semantic/SemanticModerationProvider.class',
+                'dev/chatmoderation/semantic/openai/OpenAiLunaModerationProvider.class',
+                'dev/chatmoderation/defaults/profanity-keywords.txt',
+                'module-info.class'
+        ]
+        requiredSuffixes.each { suffix ->
+            if (!paths.any { it.endsWith(suffix) }) {
+                throw new GradleException("production JAR is missing ${suffix}")
+            }
+        }
+        def forbidden = paths.findAll { path ->
+            path.contains('/test/')
+                    || path.contains('/validation/')
+                    || path.contains('gate-holdout')
+                    || path.contains('gate-calibration')
+                    || path.contains('policy-holdout')
+                    || path.endsWith('.md')
+        }
+        if (!forbidden.isEmpty()) {
+            throw new GradleException("production JAR contains test/experiment assets: ${forbidden}")
+        }
+    }
+}
+
+tasks.named('check') {
+    dependsOn tasks.named('verifyProductionJar')
 }
 
 tasks.withType(JavaCompile).configureEach {

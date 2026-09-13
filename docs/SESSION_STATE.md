@@ -2,7 +2,7 @@
 
 ## 현재 Phase
 
-Phase 3.16 — Final Luna Evaluation Harness 준비 완료, live 실행 대기
+Phase 4A — Production Library Promotion and JAR Packaging 완료
 
 ## 완료된 것
 
@@ -92,21 +92,35 @@ Phase 3.16 — Final Luna Evaluation Harness 준비 완료, live 실행 대기
 - frozen Phase 3.13 prompt/model/provider를 재사용하는 final Luna A/B/C harness
 - credential·가격 미설정 시 live task만 명확히 skip하는 실행 계약
 - 전체/category 지표, routing loss, latency, token, 실제 비용과 월 projection 출력 준비
+- Phase 3.16 frozen sealed holdout live 실행 완료
+- Phase 3.15 + Luna accuracy 98.13%, precision 100%, recall 96.25%, FPR 0%
+- Luna latency average 942 ms, p95 1306 ms, p99 1951 ms
+- Luna average API cost `$0.00014198/request`
+- validated confidence-aware gate와 semantic contracts를 `src/main`에 승격
+- 기존 synchronous `ChatModerationService.moderate(String)` public contract 유지
+- default production dictionary/exception/alias resources 패키징
+- runtime-configured `OpenAiLunaModerationProvider`와 frozen policy prompt 승격
+- `DETERMINISTIC_FALLBACK` / `FAIL_OPEN` / `FAIL_CLOSED` production failure policy
+- BLOCK precedence에서도 provider 전송 전 phone/email을 독립 sanitization
+- semantic ALLOW와 FAIL_OPEN이 개인정보 원문을 복원하지 않는 production test
+- external package consumer smoke test
+- Java module export를 통한 matcher/normalizer/rule/gate 내부 경계
+- version `0.2.0`, `chat-moderation-0.2.0.jar` 생성 및 contents 검사
 
 ## 아직 구현하지 않은 것
 
 - Spring 연동
 - Redis 연동
-- Phase 3.15 sealed holdout의 final Luna A/B/C live 실행과 사람 검토
+- YoungManRest_BE Spring adapter와 dependency 통합
 - WebSocket 연동
 - Grafana metric
 
 ## 다음 작업
 
-Phase 3.15 gate는 sealed candidate recall 95.71%로 기준을 통과했지만 production에
-연결하지 않는다. 다음 작업은 사람이 `OPENAI_API_KEY`와 실행 시점 token 가격을 process
-environment에만 설정하고 `./gradlew finalLunaEvaluation`을 실행한 뒤 Luna 100%, Phase
-3.14 + Luna, Phase 3.15 + Luna 결과를 검토하는 것이다. Gate, calibration, sealed holdout은
-더 이상 수정하지 않는다. Live 결과 검토 전에는 final production JAR을 package/promote하지
-않는다. YoungManRest_BE, original ↔ normalized offset mapping, Redis와 Spring adapter는
-별도 Phase로 유지한다.
+Production library는 `build/libs/chat-moderation-0.2.0.jar`로 준비됐다. 다음 작업은 사람의
+승인 후 YoungManRest_BE Gradle dependency와 Spring-only adapter를 추가하는 것이다. Adapter는
+semantic 호출을 bounded worker에서 수행하고 explicit timeout/failure policy를 설정하며,
+반드시 persistence와 WebSocket broadcast 전에 `moderate`를 호출해야 한다. BLOCK은 두 작업을
+모두 중단하고 MASK는 `outputMessage`만 저장·전송하는 integration test가 필요하다. Phase 3.15
+gate와 sealed dataset은 historical 결과를 고치기 위해 변경하지 않는다. Redis와 original ↔
+normalized offset mapping은 별도 범위다.

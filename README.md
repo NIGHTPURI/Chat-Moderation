@@ -57,9 +57,9 @@ Codex에서 이 폴더를 연 뒤 다음 파일을 먼저 읽게 하세요.
 
 ## 현재 상태
 
-Phase 3.15 confidence-aware semantic gate와 Phase 3.16 final Luna evaluation harness
-준비까지 완료되었습니다. 새 gate는 독립 sealed holdout의 95% candidate recall 기준을
-통과했지만 live Luna 결과와 사람의 검토 전까지 production 후보로 승격하지 않습니다.
+Phase 3.16 live 평가와 Phase 4A production library 승격까지 완료되었습니다. Validated
+Phase 3.15 gate + Luna는 sealed holdout에서 accuracy 98.13%, recall 96.25%, FPR 0%를
+기록했습니다. Java 21 library JAR은 `build/libs/chat-moderation-0.2.0.jar`로 생성됩니다.
 다음 순수 Java Core 및 검증 환경을 포함합니다.
 
 - Unicode NFC, 영문 소문자화, 양끝 공백 제거를 수행하는 기본 Normalizer
@@ -90,6 +90,9 @@ Phase 3.15 confidence-aware semantic gate와 Phase 3.16 final Luna evaluation ha
 - deterministic BLOCK의 문맥 민감도를 포함한 confidence-aware semantic gate
 - 독립 calibration 480건, sealed holdout 320건, production-like cost dataset 500건
 - Luna 100% / Phase 3.14 + Luna / Phase 3.15 + Luna 최종 live harness
+- production semantic provider API와 explicit failure policy
+- runtime-configured OpenAI Luna provider와 개인정보 sanitization
+- Java module API 경계와 versioned JAR contents verification
 
 ## 로컬 테스트
 
@@ -97,6 +100,7 @@ Phase 3.15 confidence-aware semantic gate와 Phase 3.16 final Luna evaluation ha
 
 ```bash
 ./gradlew test
+./gradlew clean build
 ```
 
 수동 playground와 개발용 benchmark는 다음처럼 실행합니다.
@@ -135,6 +139,8 @@ Router 재설계 결과는
 Confidence-aware gate 결과는
 [Confidence-Aware Gate Experiment](docs/CONFIDENCE_AWARE_GATE_EXPERIMENT.md), 최종 live 실행은
 [Final Luna Evaluation](docs/FINAL_LUNA_EVALUATION.md)을 참고하세요.
+Production JAR API와 backend 사용 계약은
+[Production Library](docs/PRODUCTION_LIBRARY.md)를 참고하세요.
 
 Corpus 형식과 검증 항목은 [Local Validation](docs/LOCAL_VALIDATION.md)에 정리되어 있습니다.
 

@@ -173,3 +173,25 @@ Phase 3.16 `FinalLunaEvaluation`은 Phase 3.13 frozen prompt/model provider를 �
 Phase 3.15 sealed holdout의 Luna 판정을 메시지당 한 번만 얻어 Luna 100%, Phase 3.14 +
 Luna, Phase 3.15 + Luna에 공유한다. Credential과 실행 시점 가격이 없으면 live task만
 skip하며 일반 build와 offline evaluation에는 영향을 주지 않는다.
+
+## 7. Production Semantic Library
+
+Phase 4A production flow는 기존 public 진입점을 유지한다.
+
+```text
+ChatModerationService.moderate(message)
+  -> deterministic moderation
+  -> confidence-aware semantic gate
+     -> certain: local ModerationResult
+     -> review: privacy sanitization -> SemanticModerationProvider
+                -> semantic decision or explicit failure policy
+  -> final ModerationResult
+```
+
+Semantic-enabled 구현은 synchronous다. 호출 thread는 provider timeout까지 block될 수 있다.
+Core가 executor나 framework를 소유하지 않으며 향후 Spring adapter가 bounded worker에서
+호출해야 한다. Phone/email sanitization은 deterministic action보다 독립적으로 provider
+전송 직전에 다시 적용한다.
+
+`module-info.java`는 consumer API용 core/model/semantic/openai package만 export한다.
+Matching, normalization, rule, policy, routing signal과 provider HTTP transport는 내부 구현이다.

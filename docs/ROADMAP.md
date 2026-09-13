@@ -259,9 +259,27 @@
 - `OPENAI_API_KEY`와 실행 시점 가격이 없으면 live task만 명확히 skip
 
 현재 상태:
-- harness와 `finalLunaEvaluation` task 준비 완료
-- overnight run에서 live API 호출하지 않음
-- 사람의 credential 설정 및 live 결과 검토 대기
+- frozen sealed holdout live 실행 완료
+- Phase 3.15 + Luna accuracy 98.13%, recall 96.25%, FPR 0%
+- latency average 942 ms, p95 1306 ms, p99 1951 ms
+- average API cost `$0.00014198/request`
+
+---
+
+## Phase 4A — Production Library Promotion and JAR Packaging
+
+- validated confidence-aware gate와 semantic provider 계약을 `src/main`에 승격
+- 기존 synchronous `ChatModerationService.moderate(String)` 유지
+- explicit provider configuration과 failure policy
+- final action과 독립된 개인정보 sanitization
+- Java module export로 consumer API 경계 제한
+- versioned Java 21 library JAR과 contents verification
+- 외부 package consumer smoke test
+
+현재 상태:
+- production code와 resources 승격 완료
+- `chat-moderation-0.2.0.jar` 생성
+- Spring/Redis/WebSocket/YoungManRest_BE 통합은 수행하지 않음
 
 ---
 
