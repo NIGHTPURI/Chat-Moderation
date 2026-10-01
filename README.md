@@ -6,6 +6,8 @@ Chat Moderation은 Java 21 기반의 재사용 가능한 채팅 moderation 라�
 
 외부 진입점은 동기식 계약인 `ModerationResult moderate(String message)`로 유지됩니다. Spring Boot, WebSocket, Redis, 데이터베이스 같은 애플리케이션 인프라는 라이브러리 밖에 둡니다.
 
+이 프로젝트의 AI 구현 범위는 **외부 모델 API 연동, 정책 prompt, 선택적 호출 gate와 임계값 보정, 합성 데이터 기반 평가**입니다. 모델을 직접 학습하거나 파인튜닝하지 않습니다.
+
 ## 주요 기능
 
 - 욕설과 강한 욕설 표현을 `PROFANITY`로 탐지하고 기본 정책에서 차단
@@ -163,11 +165,13 @@ public class SemanticExample {
 
 일반 `test`와 `build`에는 API key나 실제 network 호출이 필요하지 않습니다. Credential-gated live evaluation task는 일반 테스트와 분리되어 있습니다.
 
+2026-10-01 문서 정리에서는 Java 실행 환경이 없어 **실행 검증 미수행**입니다. 아래 수치는 기존 평가 문서의 기록이며 이번에 테스트나 모델 호출을 재실행한 결과가 아닙니다.
+
 ## Evaluation
 
 저장소에는 deterministic corpus/evaluation, semantic 비교, threshold calibration, router/gate calibration과 sealed holdout, credential-gated live provider 평가 작업이 포함되어 있습니다. 평가 runner와 dataset은 `src/test`에 있으며 production JAR에는 포함되지 않습니다.
 
-동결된 320건 sealed holdout에서 수행한 Phase 3.16 live 실험 결과는 다음과 같습니다.
+기존 [Phase 3.16 실험 보고서](docs/FINAL_LUNA_EVALUATION.md)에 기록된 320건 sealed holdout 결과는 다음과 같습니다. 모델 학습 점수나 calibration 점수가 아닌 별도 holdout 평가이며, 대회의 Public / Private Leaderboard 점수는 아닙니다.
 
 | mode | accuracy | precision | recall | F1 | FPR | FNR |
 |---|---:|---:|---:|---:|---:|---:|
@@ -176,6 +180,8 @@ public class SemanticExample {
 | Phase 3.15 + Luna | 98.13% | 100% | 96.25% | 98.09% | 0% | 3.75% |
 
 이 수치는 고정된 실험 dataset, policy prompt, model 및 당시 실행 조건에서의 결과입니다. 임의의 실제 트래픽에 대한 정확도, latency, 비용 또는 production SLA를 보장하지 않습니다. 자세한 평가 조건과 해석은 [Final Luna Evaluation](docs/FINAL_LUNA_EVALUATION.md)과 [Local Validation](docs/LOCAL_VALIDATION.md)을 참고하세요.
+
+데이터는 실제 서비스 트래픽이 아니라 [템플릿](src/test/resources/moderation/gate-holdout-templates.tsv)의 문구 조합을 [생성 코드](src/test/java/dev/chatmoderation/gate/GateEvaluationResources.java)로 확장한 합성 데이터입니다. [평가 runner](src/test/java/dev/chatmoderation/validation/FinalLunaEvaluation.java)는 메시지별 외부 API 판정 하나를 세 mode에 재사용합니다. [독립성 테스트](src/test/java/dev/chatmoderation/validation/ConfidenceGateDatasetIndependenceTest.java)는 데이터 간 문자열 중복을 검사하지만 의미 수준의 독립성까지 보장하지는 않습니다. 추적 파일에서 원본 API 응답·실행 로그는 확인되지 않아 보고서 수치의 독립 재현 검증은 남아 있습니다.
 
 ## Spring Boot 통합
 
@@ -196,7 +202,7 @@ class ModerationConfiguration {
 }
 ```
 
-별도의 익명 Spring Boot backend와 통합해 PostgreSQL, Redis, transaction/idempotency, bounded executor 및 integration test를 포함한 경로에서 library contract를 검증했습니다. 이는 이 저장소가 production에 배포되었다는 의미는 아닙니다.
+이 저장소에서 확인할 수 있는 연동 검증 코드는 [BackendContractSimulationTest](src/test/java/dev/chatmoderation/validation/BackendContractSimulationTest.java)의 저장 전 `BLOCK` / `MASK` / `ALLOW` 계약 simulation입니다. 위 Bean 코드는 host 측 구성 예시입니다. 기존 별도 Spring Boot backend 연동 기록의 PostgreSQL·Redis·transaction/idempotency 검증은 이 저장소만으로 재확인할 수 없으며, 이 라이브러리의 운영 배포 근거로 사용하지 않습니다.
 
 Transaction, persistence, rate limiting, executor·timeout 운영, HTTP response mapping, metrics와 broadcast 순서는 host 애플리케이션의 책임입니다. 반드시 persistence와 broadcast 전에 moderation을 실행하고, `BLOCK`은 두 작업을 모두 중단하며, `ALLOW`와 `MASK`는 `outputMessage()`만 사용해야 합니다.
 
