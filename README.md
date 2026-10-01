@@ -1,5 +1,13 @@
 # Chat Moderation
 
+**규칙은 로컬에서, 불확실한 문맥은 선택적으로.**
+
+![Java 21](https://img.shields.io/badge/Java-21-B45309?style=flat)
+![Gradle](https://img.shields.io/badge/Gradle-02303A?style=flat)
+![AI: API integration](https://img.shields.io/badge/AI-API_integration-374151?style=flat)
+
+[설계와 흐름](#아키텍처) · [실행 방법](#빌드--테스트) · [평가 근거](#evaluation) · [한계](#제한사항)
+
 ## 프로젝트 소개
 
 Chat Moderation은 Java 21 기반의 재사용 가능한 채팅 moderation 라이브러리입니다. 특정 웹 프레임워크나 전송 계층에 의존하지 않는 `framework-independent core`를 제공하며, 명시적인 신호를 처리하는 deterministic moderation과 문맥 판단을 위한 optional semantic moderation을 하나의 API로 사용할 수 있습니다.
@@ -25,6 +33,24 @@ Chat Moderation은 Java 21 기반의 재사용 가능한 채팅 moderation 라�
 
 ## 아키텍처
 
+```mermaid
+flowchart TD
+    A["메시지"] --> B["정규화 · 규칙 판정"]
+    B --> C{"Semantic 호출 필요?"}
+    C -->|아니요| G["규칙 판정 유지"]
+    C -->|예| D["전화번호 · 이메일 마스킹"]
+    D --> E["모델 API"]
+    E -->|성공| F["규칙 결과와 병합"]
+    E -->|실패| H["설정된 장애 정책"]
+    G --> R["ALLOW / MASK / BLOCK"]
+    F --> R
+    H --> R
+    R --> I["호출자가 저장 · 전송 여부 결정"]
+```
+
+<details>
+<summary>텍스트로 흐름 보기</summary>
+
 ```text
 input
   -> canonical / normalized / detection views
@@ -37,9 +63,12 @@ input
   -> ALLOW / MASK / BLOCK
 ```
 
+</details>
+
 `canonical`은 입력의 양끝 공백을 제거한 문자열이며, normalization과 obfuscation detection view는 탐지에만 사용됩니다. 개인정보 마스킹은 canonical 원문의 range를 기준으로 수행합니다.
 
-저장하거나 broadcast하는 consumer는 raw input을 다시 사용하면 안 됩니다. `result.allowed()`를 먼저 확인하고, 허용된 결과는 반드시 `result.outputMessage()`를 사용해야 합니다. `MASK` 결과의 `outputMessage()`에는 이미 개인정보가 마스킹되어 있습니다.
+> [!IMPORTANT]
+> 저장하거나 broadcast하는 consumer는 raw input을 다시 사용하면 안 됩니다. `result.allowed()`를 먼저 확인하고, 허용된 결과는 반드시 `result.outputMessage()`를 사용해야 합니다. `MASK` 결과의 `outputMessage()`에는 이미 개인정보가 마스킹되어 있습니다.
 
 ## 왜 Hybrid Moderation인가?
 
