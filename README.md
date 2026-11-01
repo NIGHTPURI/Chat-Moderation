@@ -8,6 +8,8 @@
 
 [설계와 흐름](#아키텍처) · [실행 방법](#빌드--테스트) · [평가 근거](#evaluation) · [한계](#제한사항)
 
+2026-11-01: [긴 이메일·URL 입력의 StackOverflow 수정 및 배포 JAR 검증](docs/REGEX_RESILIENCE_20261101.md). Java 21 `clean check`에서 458개 회귀 테스트와 별도 JAR 소비자 실행을 검증하며, CI는 실제 모델 호출 없이 동작합니다.
+
 ## 프로젝트 소개
 
 Chat Moderation은 Java 21 기반의 재사용 가능한 채팅 moderation 라이브러리입니다. 특정 웹 프레임워크나 전송 계층에 의존하지 않는 `framework-independent core`를 제공하며, 명시적인 신호를 처리하는 deterministic moderation과 문맥 판단을 위한 optional semantic moderation을 하나의 API로 사용할 수 있습니다.

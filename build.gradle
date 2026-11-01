@@ -187,6 +187,29 @@ tasks.register('verifyProductionJar') {
 
 tasks.named('check') {
     dependsOn tasks.named('verifyProductionJar')
+    dependsOn 'packagedConsumerSmoke'
+}
+
+def consumerClasses = layout.buildDirectory.dir('packaged-consumer')
+def productionJar = tasks.named('jar').flatMap { it.archiveFile }
+
+tasks.register('compilePackagedConsumer', JavaCompile) {
+    description = 'Compiles a separate consumer against only the shipped JAR.'
+    dependsOn tasks.named('jar')
+    source = fileTree('verification') { include '*.java' }
+    classpath = files(productionJar)
+    destinationDirectory = consumerClasses
+    javaCompiler = javaToolchains.compilerFor { languageVersion = JavaLanguageVersion.of(21) }
+    options.release = 21
+}
+
+tasks.register('packagedConsumerSmoke', JavaExec) {
+    group = 'verification'
+    description = 'Runs public API and bundled-resource checks without production source directories.'
+    dependsOn tasks.named('compilePackagedConsumer')
+    classpath = files(productionJar, consumerClasses)
+    mainClass = 'PackagedConsumer'
+    javaLauncher = javaToolchains.launcherFor { languageVersion = JavaLanguageVersion.of(21) }
 }
 
 tasks.withType(JavaCompile).configureEach {
